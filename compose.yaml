@@ -1,0 +1,100 @@
+name: web-app
+
+# Shared by the three services that run the Laravel image.
+x-laravel: &laravel
+  build:
+    context: ./backend
+    dockerfile: ../docker/php/Dockerfile
+    additional_contexts:
+      php-conf: ./docker/php
+  env_file: ./.env
+  environment:
+    # Container-network facts; these override anything in .env.
+    DB_HOST: postgres
+    DB_PORT: 5432
+    REDIS_HOST: redis
+    LOG_CHANNEL: stderr
+  volumes:
+    - storage:/var/www/html/storage
+  networks: [app]
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  app:
+    <<: *laravel
+
+  horizon:
+    <<: *laravel
+    command: ["php", "artisan", "horizon"]
+    stop_grace_period: 60s
+
+  scheduler:
+    <<: *laravel
+    command: ["php", "artisan", "schedule:work"]
+
+  nginx:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/nginx/Dockerfile
+      additional_contexts:
+        nginx-conf: ./docker/nginx
+    # Loopback only, for testing on the box itself. Public traffic arrives via cloudflared.
+    ports:
+      - "127.0.0.1:${APP_PORT:-23417}:80"
+    networks: [app]
+    restart: unless-stopped
+    depends_on:
+      - app
+
+  postgres:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:?set DB_DATABASE in .env}
+      POSTGRES_USER: ${DB_USERNAME:?set DB_USERNAME in .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?set DB_PASSWORD in .env}
+    volumes:
+      # Postgres 18+ images keep data under /var/lib/postgresql/<major>/
+      - pgdata:/var/lib/postgresql
+    networks: [app]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    networks: [app]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.7
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    networks: [app]
+    restart: unless-stopped
+    depends_on:
+      - nginx
+
+networks:
+  app:
+
+volumes:
+  storage:
+  pgdata:
+  redisdata:
