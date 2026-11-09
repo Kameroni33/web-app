@@ -1,15 +1,13 @@
 {
-    "cloud": true,
+    "cloud": false,
     "guidelines": true,
-    "mcp": true,
+    "mcp": false,
     "nightwatch": false,
     "sail": false,
     "skills": [
         "infer-conventions",
-        "deploying-to-cloud",
         "laravel-best-practices",
         "testing-best-practices",
-        "configuring-horizon",
-        "tailwindcss-development"
+        "configuring-horizon"
     ]
 }

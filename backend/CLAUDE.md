@@ -1,4 +1,16 @@
 <laravel-boost-guidelines>
+=== .ai/docker rules ===
+
+# Docker Compose Setup
+
+- The app runs under Docker Compose from the repo root (`../compose.yaml`). Postgres and Redis are only reachable inside the Compose network, never from the host.
+- Configuration lives in the single root `../.env`; there is no `backend/.env`. Never create one.
+- Commands that need the database, Redis or app config run in the container: `docker compose exec app php artisan migrate`, `docker compose exec app php artisan tinker`, `docker compose exec app php artisan route:list`.
+- Commands that only touch code run on the host: `php artisan make:*`, `vendor/bin/pint`, `php artisan test` (PHPUnit uses in-memory SQLite via `phpunit.xml`).
+- Application code is baked into the image (no bind mount, opcache does not revalidate). After changing PHP code, rebuild: `docker compose up -d --build app horizon scheduler`.
+- The production image is built with `composer install --no-dev`, so dev packages (Boost, Pail) exist only on the host. Boost's database tools therefore cannot see the Compose Postgres.
+- Deployment target is the self-hosted Compose stack behind Cloudflare Tunnel, not Laravel Cloud.
+
 === foundation rules ===
 
 # Laravel Boost Guidelines
@@ -10,10 +22,6 @@ This application is a Laravel application running on PHP 8.4. Always use the API
 Before relying on a package's API, confirm its installed version:
 - PHP packages: run `composer show --direct` to list direct dependencies with versions, or `composer show <vendor/package>` for a single package.
 - JS packages: check `package.json` for the installed versions.
-
-## Skills Activation
-
-This project has domain-specific skills available in `**/skills/**`. You MUST activate the relevant skill whenever you work in that domain—don't wait until you're stuck.
 
 ## Conventions
 
@@ -41,28 +49,6 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 === boost rules ===
 
 # Laravel Boost
-
-## Tools
-
-- Laravel Boost is an MCP server with tools designed specifically for this application. Prefer Boost tools over manual alternatives like shell commands or file reads.
-- Use `database-query` to run read-only queries against the database instead of writing raw SQL in tinker.
-- Use `database-schema` to inspect table structure before writing migrations or models.
-- Use `get-absolute-url` to resolve the correct scheme, domain, and port for project URLs. Always use this before sharing a URL with the user.
-- Use `browser-logs` to read browser logs, errors, and exceptions. Only recent logs are useful, ignore old entries.
-
-## Searching Documentation (IMPORTANT)
-
-- Use `search-docs` before changes that depend on Laravel ecosystem APIs, behavior, configuration, or version-specific syntax. Skip it for copy-only edits and other changes where package documentation is irrelevant. Reuse sufficient results already in context instead of searching again.
-- Pass a `packages` array to scope results when you know which packages are relevant.
-- Use multiple broad, topic-based queries: `['rate limiting', 'routing rate limiting', 'routing']`. Expect the most relevant results first.
-- Do not add package names to queries because package info is already shared. Use `test resource table`, not `filament 4 test resource table`.
-
-### Search Syntax
-
-1. Use words for auto-stemmed AND logic: `rate limit` matches both "rate" AND "limit".
-2. Use `"quoted phrases"` for exact position matching: `"infinite scroll"` requires adjacent words in order.
-3. Combine words and phrases for mixed queries: `middleware "rate limit"`.
-4. Use multiple queries for OR logic: `queries=["authentication", "middleware"]`.
 
 ## Project Rules
 
@@ -96,7 +82,6 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 # Deployment
 
 - Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
-- Activate the `deploying-to-cloud` skill whenever deploying to Laravel Cloud, configuring Cloud environments or resources, using the Cloud CLI, or troubleshooting Cloud deployments.
 
 === laravel/core rules ===
 
