@@ -15,6 +15,7 @@ FROM php:8.4-fpm-alpine
 COPY --from=mlocati/php-extension-installer:2 /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions pdo_pgsql redis pcntl intl opcache \
  && cp "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+ENV PHP_OPCACHE_VALIDATE_TIMESTAMPS=0
 COPY --from=php-conf opcache.ini $PHP_INI_DIR/conf.d/zz-opcache.ini
 
 WORKDIR /var/www/html

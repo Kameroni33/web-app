@@ -198,6 +198,16 @@ Defense in layers: Cloudflare filters traffic before it reaches the box, Laravel
 - Nightly `pg_dump`, encrypted and copied off-site (restic is a good fit).
 - Restore tested once before family data goes in, then periodically.
 
+**Host portability**
+
+Development runs on the laptop; going live means moving the database to the home server. The stack is built so a host move is a dump, a copy and a restore.
+
+- State lives in exactly three places: Postgres, the `storage` volume and the root `.env`. No host paths or bind mounts in production.
+- `APP_KEY` moves with the database. Without it, encrypted finance fields and existing sessions can't be read.
+- `TUNNEL_TOKEN` is in `.env`, so the tunnel moves too. Stop the old host's `cloudflared` before starting the new one.
+- Move steps: `scripts/db-dump.sh` on the old host, copy the dump and `.env`, `docker compose up -d`, `scripts/db-restore.sh <dump>`, then `php artisan migrate --force`.
+- The laptop-only `compose.dev.yaml` overlay is enabled through `COMPOSE_FILE` in `.env`; leave it out of the server's `.env`.
+
 ## PWA & install experience
 
 Family install the app from a link, with a short illustrated guide per platform. No app store involved.

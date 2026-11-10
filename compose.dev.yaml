@@ -1,0 +1,17 @@
+# Laptop development overlay: mounts the backend source into the Laravel
+# containers so PHP changes apply without rebuilding the image.
+# Enable it by adding this line to the root .env (never on the server):
+#   COMPOSE_FILE=compose.yaml:compose.dev.yaml
+# Horizon keeps code in memory: `docker compose restart horizon` after job changes.
+
+x-dev: &dev
+  volumes:
+    - ./backend:/var/www/html
+    - storage:/var/www/html/storage
+  environment:
+    PHP_OPCACHE_VALIDATE_TIMESTAMPS: "1"
+
+services:
+  app: *dev
+  horizon: *dev
+  scheduler: *dev
