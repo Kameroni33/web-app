@@ -6,4 +6,3 @@
 - Commands that only touch code run on the host: `php artisan make:*`, `vendor/bin/pint`, `php artisan test` (PHPUnit uses in-memory SQLite via `phpunit.xml`).
 - Application code is baked into the image (no bind mount, opcache does not revalidate). After changing PHP code, rebuild: `docker compose up -d --build app horizon scheduler`.
 - The production image is built with `composer install --no-dev`, so dev packages (Boost, Pail) exist only on the host. Boost's database tools therefore cannot see the Compose Postgres.
-- Deployment target is the self-hosted Compose stack behind Cloudflare Tunnel, not Laravel Cloud.

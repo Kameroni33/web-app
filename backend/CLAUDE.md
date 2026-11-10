@@ -9,7 +9,6 @@
 - Commands that only touch code run on the host: `php artisan make:*`, `vendor/bin/pint`, `php artisan test` (PHPUnit uses in-memory SQLite via `phpunit.xml`).
 - Application code is baked into the image (no bind mount, opcache does not revalidate). After changing PHP code, rebuild: `docker compose up -d --build app horizon scheduler`.
 - The production image is built with `composer install --no-dev`, so dev packages (Boost, Pail) exist only on the host. Boost's database tools therefore cannot see the Compose Postgres.
-- Deployment target is the self-hosted Compose stack behind Cloudflare Tunnel, not Laravel Cloud.
 
 === foundation rules ===
 
@@ -81,7 +80,10 @@ Before relying on a package's API, confirm its installed version:
 
 # Deployment
 
-- Laravel can be deployed using [Laravel Cloud](https://cloud.laravel.com/), which is the fastest way to deploy and scale production Laravel applications.
+- This app is self-hosted: the Docker Compose stack in `../compose.yaml` runs on a home server and is reachable only through a Cloudflare Tunnel. It is not deployed to Laravel Cloud, Forge, Vapor or any PaaS; do not suggest them.
+- A deploy is `git pull` followed by `docker compose up -d --build`, then `docker compose exec app php artisan migrate --force`.
+- Migrations must be safe to run against existing data. Never assume a fresh database outside tests.
+- State that must survive a move to a new host lives only in Postgres, the `storage` volume and the root `.env` (including `APP_KEY`). Do not write state anywhere else (no host paths, no local files outside `storage/`).
 
 === laravel/core rules ===
 
