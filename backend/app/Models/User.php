@@ -32,6 +32,22 @@ class User extends Authenticatable
     }
 
     /**
+     * The apps this user can open, in display order.
+     *
+     * Everyone gets every app for now. Per-user or per-group access goes
+     * here once groups exist.
+     *
+     * @return list<array{key: string, name: string, description: string}>
+     */
+    public function availableApps(): array
+    {
+        return collect(config('apps'))
+            ->map(fn (array $app, string $key): array => ['key' => $key, ...$app])
+            ->values()
+            ->all();
+    }
+
+    /**
      * @return HasMany<LoginChallenge, $this>
      */
     public function loginChallenges(): HasMany

@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { giftsRoutes } from '@/apps/gifts/routes'
+import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
 declare module 'vue-router' {
@@ -7,6 +9,8 @@ declare module 'vue-router' {
     requiresAuth?: boolean
     /** Only for signed-out users; signed-in users are sent home. */
     guestOnly?: boolean
+    /** Belongs to this app (key from /api/apps); users without it are sent home. */
+    app?: string
   }
 }
 
@@ -15,8 +19,9 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      // Landing page after sign-in: pick which app to use.
       name: 'home',
-      component: () => import('@/views/HomeView.vue'),
+      component: () => import('@/views/AppPickerView.vue'),
       meta: { requiresAuth: true },
     },
     {
@@ -42,6 +47,7 @@ const router = createRouter({
       component: () => import('@/views/DevicesView.vue'),
       meta: { requiresAuth: true },
     },
+    ...giftsRoutes,
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
@@ -59,6 +65,15 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.guestOnly && auth.isSignedIn) {
     return { name: 'home' }
+  }
+  if (to.meta.app) {
+    const apps = useAppsStore()
+    try {
+      await apps.ensureLoaded()
+    } catch {
+      return // Offline: let the app render; its API calls are authorized server-side anyway.
+    }
+    if (!apps.find(to.meta.app)) return { name: 'home' }
   }
 })
 

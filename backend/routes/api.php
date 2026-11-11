@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SessionController;
+use App\Http\Controllers\AvailableAppController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->name('auth.')->group(function () {
@@ -21,6 +22,7 @@ Route::prefix('auth')->name('auth.')->group(function () {
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('me', [LoginController::class, 'me'])->name('me');
+    Route::get('apps', AvailableAppController::class)->name('apps.index');
     Route::get('sessions', [SessionController::class, 'index'])->name('sessions.index');
     Route::delete('sessions/others', [SessionController::class, 'destroyOthers'])->name('sessions.destroy-others');
 });
