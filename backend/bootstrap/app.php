@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Only nginx (inside the app network) can reach php-fpm; it relays
         // cloudflared's X-Forwarded-* headers so URLs and client IPs are correct.
         $middleware->trustProxies(at: '*');
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

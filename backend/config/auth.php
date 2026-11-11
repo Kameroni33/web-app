@@ -114,4 +114,20 @@ return [
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Passwordless Sign-In
+    |--------------------------------------------------------------------------
+    |
+    | Lifetimes (minutes) for the emailed 6-digit code and sign-in link, and
+    | how many wrong codes are allowed before the challenge is discarded.
+    |
+    */
+
+    'passwordless' => [
+        'code_ttl' => (int) env('LOGIN_CODE_TTL', 10),
+        'link_ttl' => (int) env('LOGIN_LINK_TTL', 15),
+        'max_attempts' => 5,
+    ],
+
 ];
