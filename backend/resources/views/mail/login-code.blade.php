@@ -1,17 +1,21 @@
 <x-mail::message>
-# Your sign-in code
+# Sign in to {{ config('app.name') }}
 
-<x-mail::panel>
-<span style="font-size: 28px; letter-spacing: 6px; font-weight: bold;">{{ $code }}</span>
-</x-mail::panel>
+Here's your sign-in code:
 
-Type this code into the app. It expires in {{ $expiresInMinutes }} minutes.
+<x-mail::code>
+{{ $code }}
+</x-mail::code>
 
-Or sign in on this device:
+Type it into the app. It expires in {{ $expiresInMinutes }} minutes.
+
+**Reading this on the device you're signing in on?** Skip the code:
 
 <x-mail::button :url="$url">
 Sign in
 </x-mail::button>
 
-If you didn't try to sign in, you can ignore this email.
+<x-slot:subcopy>
+Didn't try to sign in? You can ignore this email. Nobody can get in without the code or the button above.
+</x-slot:subcopy>
 </x-mail::message>

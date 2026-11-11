@@ -28,7 +28,7 @@ blockquote {
 }
 
 a {
-    color: #18181b;
+    color: #0f766e;
 }
 
 a img {
@@ -39,7 +39,7 @@ a img {
 
 h1 {
     color: #18181b;
-    font-size: 18px;
+    font-size: 22px;
     font-weight: bold;
     margin-top: 0;
     text-align: start;
@@ -103,8 +103,8 @@ img {
 }
 
 .header a {
-    color: #18181b;
-    font-size: 19px;
+    color: #0f766e;
+    font-size: 20px;
     font-weight: bold;
     text-decoration: none;
 }
@@ -139,8 +139,9 @@ img {
     -premailer-width: 570px;
     background-color: #ffffff;
     border-color: #e4e4e7;
-    border-radius: 4px;
+    border-radius: 12px;
     border-width: 1px;
+    border-top: 6px solid #0f766e;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
     padding: 0;
@@ -230,7 +231,9 @@ img {
 
 .button {
     -webkit-text-size-adjust: none;
-    border-radius: 4px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
     color: #fff;
     display: inline-block;
     overflow: hidden;
@@ -239,11 +242,11 @@ img {
 
 .button-blue,
 .button-primary {
-    background-color: #18181b;
-    border-bottom: 8px solid #18181b;
-    border-left: 18px solid #18181b;
-    border-right: 18px solid #18181b;
-    border-top: 8px solid #18181b;
+    background-color: #0f766e;
+    border-bottom: 12px solid #0f766e;
+    border-left: 28px solid #0f766e;
+    border-right: 28px solid #0f766e;
+    border-top: 12px solid #0f766e;
 }
 
 .button-green,
@@ -267,7 +270,7 @@ img {
 /* Panels */
 
 .panel {
-    border-left: #18181b solid 4px;
+    border-left: #0f766e solid 4px;
     margin: 21px 0;
 }
 
@@ -288,6 +291,28 @@ img {
 .panel-item p:last-of-type {
     margin-bottom: 0;
     padding-bottom: 0;
+}
+
+/* One-time code */
+
+.code {
+    -premailer-cellpadding: 0;
+    -premailer-cellspacing: 0;
+    -premailer-width: 100%;
+    margin: 8px 0 24px;
+}
+
+.code-box {
+    background-color: #f0fdfa;
+    border: 1px solid #99f6e4;
+    border-radius: 12px;
+    color: #134e4a;
+    display: inline-block;
+    font-family: 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+    font-size: 36px;
+    font-weight: bold;
+    letter-spacing: 10px;
+    padding: 14px 18px 14px 28px;
 }
 
 /* Utilities */

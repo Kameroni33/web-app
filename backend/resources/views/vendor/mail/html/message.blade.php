@@ -21,7 +21,7 @@
 {{-- Footer --}}
 <x-slot:footer>
 <x-mail::footer>
-© {{ date('Y') }} {{ config('app.name') }}. {{ __('All rights reserved.') }}
+{{ config('app.name') }} · [{{ parse_url(config('app.url'), PHP_URL_HOST) }}]({{ config('app.url') }})
 </x-mail::footer>
 </x-slot:footer>
 </x-mail::layout>
