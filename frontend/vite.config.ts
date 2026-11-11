@@ -29,8 +29,8 @@ export default defineConfig({
       pwaAssets: { config: true, overrideManifestIcons: true },
       manifest: {
         id: '/',
-        name: 'Web Apps',
-        short_name: 'Web Apps',
+        name: 'Kam Apps',
+        short_name: 'Kam Apps',
         description: 'Family gift lists, groceries, recipes and more.',
         start_url: '/',
         scope: '/',

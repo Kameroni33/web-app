@@ -30,7 +30,7 @@ async function signOut(): Promise<void> {
     <div class="brand">
       <RouterLink to="/" class="home-link">
         <img src="/logo.svg" alt="" width="28" height="28" />
-        <span :class="{ 'hide-narrow': currentApp }">Web Apps</span>
+        <span :class="{ 'hide-narrow': currentApp }">Kam Apps</span>
       </RouterLink>
       <template v-if="currentApp">
         <span class="separator" aria-hidden="true">/</span>
@@ -46,7 +46,7 @@ async function signOut(): Promise<void> {
   <RouterView />
 
   <footer class="app-footer muted">
-    <span :title="`Built ${buildTime}`">Web Apps v{{ version }}</span> ·
+    <span :title="`Built ${buildTime}`">Kam Apps v{{ version }}</span> ·
     <RouterLink to="/install">Install</RouterLink>
   </footer>
 
