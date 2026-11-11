@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SendAppVersion;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // cloudflared's X-Forwarded-* headers so URLs and client IPs are correct.
         $middleware->trustProxies(at: '*');
         $middleware->statefulApi();
+        $middleware->api(prepend: [SendAppVersion::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

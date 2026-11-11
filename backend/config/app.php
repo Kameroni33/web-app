@@ -17,6 +17,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | YEAR.M.P, bumped together with frontend/package.json by
+    | scripts/release.sh. Sent on every API response (X-App-Version) so the
+    | app can tell when it is out of step with the server.
+    |
+    */
+
+    'version' => '2026.11.0',
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
     |

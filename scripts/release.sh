@@ -3,8 +3,10 @@
 #
 # Versions are YEAR.M.P (calendar versioning): P counts releases within the
 # month and resets when the month changes, e.g. 2026.11.0, 2026.11.1, 2026.12.0.
-# The version lives in frontend/package.json (no zero-padded month, so it stays
-# valid semver) and is shown in the app's footer.
+# The version lives in two places, always equal after a release:
+#   frontend/package.json  (no zero-padded month, so it stays valid semver)
+#   backend/config/app.php ('version', sent as the X-App-Version header)
+# The app compares them and warns in Settings when they differ.
 #
 # Usage: scripts/release.sh            # next version
 #        scripts/release.sh 2026.11.4  # explicit version
@@ -38,7 +40,12 @@ if git rev-parse -q --verify "refs/tags/v$next" >/dev/null; then
 fi
 
 (cd frontend && npm version "$next" --no-git-tag-version >/dev/null)
-git add frontend/package.json frontend/package-lock.json
+sed -i -E "s/^(    'version' => ')[^']*(',)$/\1$next\2/" backend/config/app.php
+grep -q "'version' => '$next'," backend/config/app.php || {
+  echo "Couldn't update the version in backend/config/app.php." >&2
+  exit 1
+}
+git add frontend/package.json frontend/package-lock.json backend/config/app.php
 git commit -q -m "Release v$next"
 git tag -a "v$next" -m "Release v$next"
 echo "Released v$next (was $current). Push with: git push --follow-tags"
