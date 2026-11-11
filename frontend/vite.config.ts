@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
+import { version } from './package.json'
 
 // Laravel, reached through the Compose nginx on the laptop (APP_PORT in the root .env).
 const backend = process.env.BACKEND_URL ?? 'http://127.0.0.1:23417'
@@ -11,6 +12,8 @@ const backend = process.env.BACKEND_URL ?? 'http://127.0.0.1:23417'
 // https://vite.dev/config/
 export default defineConfig({
   define: {
+    // YEAR.M.P, bumped by scripts/release.sh.
+    __APP_VERSION__: JSON.stringify(version),
     __APP_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
   },
   plugins: [
@@ -26,8 +29,8 @@ export default defineConfig({
       pwaAssets: { config: true, overrideManifestIcons: true },
       manifest: {
         id: '/',
-        name: 'Personal Tools',
-        short_name: 'Tools',
+        name: 'Web Apps',
+        short_name: 'Web Apps',
         description: 'Family gift lists, groceries, recipes and more.',
         start_url: '/',
         scope: '/',

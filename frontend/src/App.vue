@@ -13,6 +13,7 @@ const router = useRouter()
 /** The app the current page belongs to, shown next to the brand. */
 const currentApp = computed(() => (route.meta.app ? appsStore.find(route.meta.app) : undefined))
 
+const version = import.meta.env.DEV ? `${__APP_VERSION__}-dev` : __APP_VERSION__
 const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
   dateStyle: 'medium',
   timeStyle: 'short',
@@ -29,7 +30,7 @@ async function signOut(): Promise<void> {
     <div class="brand">
       <RouterLink to="/" class="home-link">
         <img src="/logo.svg" alt="" width="28" height="28" />
-        <span :class="{ 'hide-narrow': currentApp }">Personal Tools</span>
+        <span :class="{ 'hide-narrow': currentApp }">Web Apps</span>
       </RouterLink>
       <template v-if="currentApp">
         <span class="separator" aria-hidden="true">/</span>
@@ -45,7 +46,8 @@ async function signOut(): Promise<void> {
   <RouterView />
 
   <footer class="app-footer muted">
-    Version {{ buildTime }} · <RouterLink to="/install">Install</RouterLink>
+    <span :title="`Built ${buildTime}`">Web Apps v{{ version }}</span> ·
+    <RouterLink to="/install">Install</RouterLink>
   </footer>
 
   <AppUpdatePrompt />
@@ -109,6 +111,10 @@ nav {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+nav a {
+  text-decoration: none;
 }
 
 .app-footer {
