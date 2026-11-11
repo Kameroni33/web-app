@@ -2,11 +2,15 @@
 
 namespace App\Http\Resources;
 
+use App\Auth\ActiveProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
+ * The signed-in account, plus the profile this device is using (null until
+ * one is chosen).
+ *
  * @mixin User
  */
 class UserResource extends JsonResource
@@ -21,6 +25,9 @@ class UserResource extends JsonResource
         return [
             'id' => $this->id,
             'email' => $this->email,
+            'profile' => $this->whenNotNull(
+                ($profile = app(ActiveProfile::class)->get()) ? new ProfileResource($profile) : null,
+            ),
         ];
     }
 }

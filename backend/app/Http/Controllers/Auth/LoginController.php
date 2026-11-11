@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Auth\ActiveProfile;
 use App\Auth\PasswordlessLogin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RequestLoginCodeRequest;
@@ -17,7 +18,10 @@ use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
-    public function __construct(private PasswordlessLogin $passwordless) {}
+    public function __construct(
+        private PasswordlessLogin $passwordless,
+        private ActiveProfile $activeProfile,
+    ) {}
 
     /**
      * Email a sign-in code and link. The response is identical whether or
@@ -75,6 +79,13 @@ class LoginController extends Controller
 
         Auth::guard('web')->login($user);
         $request->session()->regenerate();
+
+        // One profile: use it. Several: the app asks who's using this device.
+        $this->activeProfile->forget();
+        $profiles = $user->profiles()->limit(2)->get();
+        if ($profiles->count() === 1) {
+            $this->activeProfile->set($profiles->first());
+        }
 
         return new UserResource($user);
     }

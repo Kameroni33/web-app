@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\RequireProfile;
 use App\Http\Middleware\SendAppVersion;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         $middleware->statefulApi();
         $middleware->api(prepend: [SendAppVersion::class]);
+        $middleware->alias(['profile' => RequireProfile::class]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
