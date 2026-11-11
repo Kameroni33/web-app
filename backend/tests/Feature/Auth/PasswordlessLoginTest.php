@@ -33,6 +33,19 @@ class PasswordlessLoginTest extends TestCase
         Mail::assertQueuedCount(1);
     }
 
+    public function test_whatever_host_serves_the_app_is_a_stateful_origin(): void
+    {
+        $user = User::factory()->create();
+        $origin = 'http://family-server.lan:23417';
+        $this->withHeader('Referer', $origin.'/login');
+
+        $this->postJson($origin.'/api/auth/login-code', ['email' => $user->email])->assertAccepted();
+
+        $this->postJson($origin.'/api/auth/verify-code', ['email' => $user->email, 'code' => $this->sentMail()->code])
+            ->assertOk();
+        $this->assertAuthenticatedAs($user, 'web');
+    }
+
     public function test_requesting_a_code_emails_a_code_and_a_link(): void
     {
         $user = User::factory()->create();
