@@ -12,12 +12,16 @@ const SOURCE = 'public/logo.svg'
 const BACKGROUND = '#0f766e'
 
 // Icon filenames carry a hash of the logo, so a new logo gets new URLs and
-// browsers (and Android's installed-app icon check) can't reuse old copies.
-const logoHash = createHash('sha256').update(readFileSync(SOURCE)).digest('hex').slice(0, 8)
-const versioned = (name: string) => name.replace(/\.(png|ico)$/, `-${logoHash}.$1`)
+// no cache (browser, Cloudflare, service worker, Android's installed-app
+// icon check) can keep serving an old copy.
+export const logoSvg = readFileSync(SOURCE)
+const logoHash = createHash('sha256').update(logoSvg).digest('hex').slice(0, 8)
+const versioned = (name: string) => name.replace(/\.(png|ico|svg)$/, `-${logoHash}.$1`)
+/** The logo itself under a hashed name; emitted by vite.config.ts. */
+export const logoFile = versioned('logo.svg')
 
 export default defineConfig({
-  headLinkOptions: { preset: '2023' },
+  headLinkOptions: { preset: '2023', resolveSvgName: () => logoFile },
   preset: {
     ...minimal2023Preset,
     // The logo already has its own margin; don't shrink it further.

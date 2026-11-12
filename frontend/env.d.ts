@@ -8,3 +8,5 @@ declare const __APP_VERSION__: string
 
 /** ISO timestamp of the build, shown when hovering the version. */
 declare const __APP_BUILD_TIME__: string
+/** public/logo.svg under a content-hashed name, so caches never serve an old logo. */
+declare const __LOGO_URL__: string

@@ -31,6 +31,7 @@ watchEffect(() => {
     ?.setAttribute('content', theme?.accent[0] ?? '#0f766e')
 })
 
+const logoUrl = __LOGO_URL__
 const version = import.meta.env.DEV ? `${__APP_VERSION__}-dev` : __APP_VERSION__
 const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
   dateStyle: 'medium',
@@ -42,7 +43,7 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
   <header class="app-header">
     <div class="brand">
       <RouterLink to="/" class="home-link">
-        <img src="/logo.svg" alt="" width="28" height="28" />
+        <img :src="logoUrl" alt="" width="28" height="28" />
         <span :class="{ 'hide-narrow': currentApp }">Kam Apps</span>
       </RouterLink>
       <template v-if="currentApp">

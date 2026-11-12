@@ -5,6 +5,7 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
 import { version } from './package.json'
+import { logoFile, logoSvg } from './pwa-assets.config'
 
 // Laravel, reached through the Compose nginx on the laptop (APP_PORT in the root .env).
 const backend = process.env.BACKEND_URL ?? 'http://127.0.0.1:23417'
@@ -15,9 +16,23 @@ export default defineConfig({
     // YEAR.M.P, bumped by scripts/release.sh.
     __APP_VERSION__: JSON.stringify(version),
     __APP_BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __LOGO_URL__: JSON.stringify(`/${logoFile}`),
   },
   plugins: [
     vue(),
+    {
+      // Serve/emit public/logo.svg under its hashed name (see pwa-assets.config.ts).
+      name: 'hashed-logo',
+      configureServer(server) {
+        server.middlewares.use(`/${logoFile}`, (_req, res) => {
+          res.setHeader('Content-Type', 'image/svg+xml')
+          res.end(logoSvg)
+        })
+      },
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: logoFile, source: logoSvg })
+      },
+    },
     vueDevTools(),
     VitePWA({
       // A new deploy waits for the user to tap "Reload" instead of swapping
