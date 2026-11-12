@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#0f766e"/>
+  <!-- Four app tiles that read as a K: two bars make the stem, two quarter
+       circles the arms. Every corner has a 30px radius; the quarter circles
+       get theirs by being drawn 30px smaller and stroked 60px wide. -->
+  <g fill="#ffffff">
+    <rect x="101" y="78" width="110" height="158" rx="30"/>
+    <rect x="101" y="276" width="110" height="158" rx="30"/>
+    <g stroke="#ffffff" stroke-width="60" stroke-linejoin="round">
+      <path d="M283 108H377.4A128 128 0 0 1 283 202.4Z"/>
+      <path d="M283 404H377.4A128 128 0 0 0 283 309.6Z"/>
+    </g>
+  </g>
+</svg>

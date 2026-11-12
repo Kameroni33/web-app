@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#4338ca"/>
+  <!-- Wallet -->
+  <g fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M150 176h188"/>
+    <rect x="118" y="176" width="276" height="208" rx="36"/>
+    <path d="M394 246h-70a34 34 0 0 0 0 68h70z"/>
+  </g>
+  <circle cx="328" cy="280" r="14" fill="#ffffff"/>
+</svg>

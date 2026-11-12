@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#c2410c"/>
+  <!-- Steaming bowl -->
+  <g fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M112 280h288"/>
+    <path d="M128 280c0 70 56 116 128 116s128-46 128-116"/>
+    <path d="M190 220c-22-26 22-46 0-80c-8-12-6-24 4-34"/>
+    <path d="M256 220c-22-26 22-46 0-80c-8-12-6-24 4-34"/>
+    <path d="M322 220c-22-26 22-46 0-80c-8-12-6-24 4-34"/>
+  </g>
+</svg>
