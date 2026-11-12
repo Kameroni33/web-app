@@ -9,6 +9,7 @@ use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AvailableAppController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\InviteController;
+use App\Http\Controllers\ProfileAvatarController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,11 +48,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('profiles', [ProfileController::class, 'index'])->name('profiles.index');
     Route::post('profiles', [ProfileController::class, 'store'])->name('profiles.store');
     Route::post('profiles/{profile}/select', ActiveProfileController::class)->name('profiles.select');
+    Route::get('profiles/{profile}/avatar', [ProfileAvatarController::class, 'show'])->name('profiles.avatar.show');
 
     // Everything else acts as the profile chosen on this device.
     Route::middleware('profile')->group(function () {
         Route::patch('profiles/{profile}', [ProfileController::class, 'update'])->name('profiles.update');
         Route::delete('profiles/{profile}', [ProfileController::class, 'destroy'])->name('profiles.destroy');
+        Route::post('profiles/{profile}/avatar', [ProfileAvatarController::class, 'update'])
+            ->middleware('throttle:20,1')
+            ->name('profiles.avatar.update');
+        Route::delete('profiles/{profile}/avatar', [ProfileAvatarController::class, 'destroy'])->name('profiles.avatar.destroy');
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
         Route::get('apps', AvailableAppController::class)->name('apps.index');
 

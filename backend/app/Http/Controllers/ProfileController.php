@@ -8,9 +8,11 @@ use App\Http\Requests\StoreProfileRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Resources\ProfileResource;
 use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 
@@ -53,15 +55,22 @@ class ProfileController extends Controller
 
         if ($request->has('role')) {
             Gate::authorize('changeRole', $profile);
-            $role = $request->enum('role', ProfileRole::class);
-
-            if ($profile->isAdmin() && $role !== ProfileRole::Admin && $this->isLastAdmin($profile)) {
-                throw ValidationException::withMessages(['role' => 'An account needs at least one admin profile.']);
-            }
-            $profile->role = $role;
         }
 
-        $profile->fill($request->safe()->only('name'))->save();
+        DB::transaction(function () use ($request, $profile) {
+            if ($request->has('role')) {
+                $role = $request->enum('role', ProfileRole::class);
+
+                // Lock the account so two admins can't demote each other at once.
+                User::query()->whereKey($profile->user_id)->lockForUpdate()->first();
+                if ($profile->isAdmin() && $role !== ProfileRole::Admin && $this->isLastAdmin($profile)) {
+                    throw ValidationException::withMessages(['role' => 'An account needs at least one admin profile.']);
+                }
+                $profile->role = $role;
+            }
+
+            $profile->fill($request->safe()->only('name'))->save();
+        });
 
         return new ProfileResource($profile);
     }

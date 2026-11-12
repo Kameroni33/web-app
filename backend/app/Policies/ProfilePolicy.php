@@ -35,6 +35,23 @@ class ProfilePolicy
         return $this->owns($user, $profile);
     }
 
+    /**
+     * Photos are seen by the account's own profiles and by families it shares.
+     * Needs no active profile: the picker shows them.
+     */
+    public function viewAvatar(User $user, Profile $profile): Response
+    {
+        if ($profile->user_id === $user->id) {
+            return Response::allow();
+        }
+
+        $sharesFamily = $user->groups()
+            ->whereHas('members', fn ($members) => $members->whereKey($profile->user_id))
+            ->exists();
+
+        return $sharesFamily ? Response::allow() : Response::denyAsNotFound();
+    }
+
     public function update(User $user, Profile $profile): Response
     {
         $owns = $this->owns($user, $profile);
