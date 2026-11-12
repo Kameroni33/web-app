@@ -56,6 +56,15 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* No rubber-band bounce or pull-to-refresh: the installed app has nothing
+     to refresh that way, and on iPhone the bounce dragged the whole UI. */
+  overscroll-behavior: none;
+}
+
+body {
+  overscroll-behavior: none;
+  /* Our own :active styles replace the grey flash browsers paint on tap. */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -200,4 +209,31 @@ select {
 .back-link {
   align-self: flex-start;
   text-decoration: none;
+}
+
+/* Hidden but still focusable and announced (e.g. a file input inside a label). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Pressed feedback for buttons. */
+button:not(:disabled) {
+  transition:
+    transform 0.1s,
+    filter 0.1s;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.97);
+  filter: brightness(0.92);
+}
+
+button.link:not(:disabled):active {
+  transform: none;
+  opacity: 0.6;
 }

@@ -3,12 +3,14 @@ import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import AppUpdatePrompt from '@/components/AppUpdatePrompt.vue'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
+import { useInstallPrompt } from '@/composables/useInstallPrompt'
 import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const appsStore = useAppsStore()
 const route = useRoute()
+const { installed } = useInstallPrompt()
 
 /** The app the current page belongs to, shown next to the brand. */
 const currentApp = computed(() => (route.meta.app ? appsStore.find(route.meta.app) : undefined))
@@ -55,15 +57,22 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
       :aria-label="`${auth.profile.name}, settings`"
     >
       <span class="me-name">{{ auth.profile.name }}</span>
-      <ProfileAvatar :name="auth.profile.name" :id="auth.profile.id" :size="32" />
+      <ProfileAvatar
+        :name="auth.profile.name"
+        :id="auth.profile.id"
+        :src="auth.profile.avatar_url"
+        :size="32"
+      />
     </RouterLink>
   </header>
 
   <RouterView />
 
   <footer class="app-footer muted">
-    <span :title="`Built ${buildTime}`">Kam Apps v{{ version }}</span> ·
-    <RouterLink to="/install">Install</RouterLink>
+    <span :title="`Built ${buildTime}`">Kam Apps v{{ version }}</span>
+    <template v-if="!installed">
+      · <RouterLink to="/install">Install</RouterLink>
+    </template>
   </footer>
 
   <AppUpdatePrompt />
@@ -87,12 +96,39 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
   font-weight: 600;
 }
 
-.home-link {
+/* Home and account links: a pill that highlights on hover and sinks when pressed. */
+.home-link,
+.me-link {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  min-width: 0;
+  margin: -0.3rem -0.5rem;
+  padding: 0.3rem 0.5rem;
   color: var(--text);
   text-decoration: none;
+  border-radius: 999px;
+  transition:
+    background-color 0.15s,
+    transform 0.1s;
+}
+
+.home-link:hover,
+.me-link:hover {
+  background: var(--surface);
+}
+
+.home-link:active,
+.me-link:active {
+  background: var(--border);
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-link:active,
+  .me-link:active {
+    transform: none;
+  }
 }
 
 .home-link img {
@@ -121,15 +157,6 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
     clip-path: inset(50%);
     white-space: nowrap;
   }
-}
-
-.me-link {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-  color: var(--text);
-  text-decoration: none;
 }
 
 .me-name {

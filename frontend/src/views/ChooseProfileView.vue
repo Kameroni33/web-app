@@ -102,7 +102,12 @@ onMounted(load)
       <ul class="profile-grid">
         <li v-for="profile in profiles" :key="profile.id">
           <button type="button" class="profile-tile" :disabled="busy" @click="choose(profile)">
-            <ProfileAvatar :name="profile.name" :id="profile.id" :size="64" />
+            <ProfileAvatar
+              :name="profile.name"
+              :id="profile.id"
+              :src="profile.avatar_url"
+              :size="64"
+            />
             <span class="name">{{ profile.name }}</span>
           </button>
         </li>

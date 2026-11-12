@@ -61,7 +61,12 @@ onMounted(load)
 
     <section v-if="auth.profile" class="card stack">
       <div class="me">
-        <ProfileAvatar :name="auth.profile.name" :id="auth.profile.id" :size="48" />
+        <ProfileAvatar
+          :name="auth.profile.name"
+          :id="auth.profile.id"
+          :src="auth.profile.avatar_url"
+          :size="48"
+        />
         <div class="who">
           <strong>{{ auth.profile.name }}</strong>
           <span class="muted small">{{ auth.user?.email }}</span>

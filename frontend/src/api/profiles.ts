@@ -7,6 +7,8 @@ export interface Profile {
   id: number
   name: string
   role: ProfileRole
+  /** Versioned photo URL, or null to show the initial. */
+  avatar_url: string | null
 }
 
 /** A family (backend: group) and everyone in it. */
@@ -50,5 +52,20 @@ export async function selectProfile(id: number): Promise<Profile> {
 
 export async function listFamilies(): Promise<Family[]> {
   const { data } = await http.get<{ data: Family[] }>('/api/groups')
+  return data.data
+}
+
+/** Set a profile's photo; the server crops it square and shrinks it. */
+export async function uploadAvatar(id: number, image: Blob): Promise<Profile> {
+  await ensureCsrfCookie()
+  const form = new FormData()
+  form.append('image', image, 'avatar.jpg')
+  const { data } = await http.post<{ data: Profile }>(`/api/profiles/${id}/avatar`, form)
+  return data.data
+}
+
+export async function removeAvatar(id: number): Promise<Profile> {
+  await ensureCsrfCookie()
+  const { data } = await http.delete<{ data: Profile }>(`/api/profiles/${id}/avatar`)
   return data.data
 }

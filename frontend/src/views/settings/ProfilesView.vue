@@ -5,12 +5,15 @@ import {
   createProfile,
   deleteProfile,
   listProfiles,
+  removeAvatar,
   updateProfile,
+  uploadAvatar,
   type Profile,
   type ProfileRole,
 } from '@/api/profiles'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
 import { useAuthStore } from '@/stores/auth'
+import { shrinkPhoto } from '@/utils/shrinkPhoto'
 
 /**
  * The people sharing this account. Admin profiles add, edit and remove them;
@@ -33,6 +36,14 @@ const newRole = ref<ProfileRole>('member')
 
 const isAdmin = computed(() => auth.profile?.role === 'admin')
 const isMe = (profile: Profile) => profile.id === auth.profile?.id
+/** The server refuses to demote this one: every account keeps an admin. */
+const isLastAdmin = (profile: Profile) =>
+  profile.role === 'admin' && profiles.value.filter((p) => p.role === 'admin').length === 1
+
+function replace(updated: Profile): void {
+  profiles.value = profiles.value.map((p) => (p.id === updated.id ? updated : p))
+  if (isMe(updated)) auth.setProfile(updated)
+}
 
 async function run(action: () => Promise<void>): Promise<void> {
   busy.value = true
@@ -64,10 +75,23 @@ const saveEdit = (profile: Profile) =>
   run(async () => {
     const changes: { name: string; role?: ProfileRole } = { name: editName.value.trim() }
     if (isAdmin.value && editRole.value !== profile.role) changes.role = editRole.value
-    const updated = await updateProfile(profile.id, changes)
-    profiles.value = profiles.value.map((p) => (p.id === updated.id ? updated : p))
-    if (isMe(updated)) auth.setProfile(updated)
+    replace(await updateProfile(profile.id, changes))
     editingId.value = null
+  })
+
+function choosePhoto(profile: Profile, event: Event): void {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  input.value = '' // so choosing the same file again still fires
+  if (!file) return
+  void run(async () => {
+    replace(await uploadAvatar(profile.id, await shrinkPhoto(file)))
+  })
+}
+
+const clearPhoto = (profile: Profile) =>
+  run(async () => {
+    replace(await removeAvatar(profile.id))
   })
 
 const confirmDelete = (profile: Profile) =>
@@ -103,6 +127,35 @@ onMounted(load)
     <ul v-else class="card profile-list">
       <li v-for="profile in profiles" :key="profile.id">
         <form v-if="editingId === profile.id" class="stack" @submit.prevent="saveEdit(profile)">
+          <div class="photo">
+            <ProfileAvatar
+              :name="profile.name"
+              :id="profile.id"
+              :src="profile.avatar_url"
+              :size="72"
+            />
+            <div class="photo-actions">
+              <label class="file-button" :class="{ disabled: busy }">
+                {{ profile.avatar_url ? 'Change photo' : 'Add photo' }}
+                <input
+                  type="file"
+                  accept="image/*"
+                  class="visually-hidden"
+                  :disabled="busy"
+                  @change="choosePhoto(profile, $event)"
+                />
+              </label>
+              <button
+                v-if="profile.avatar_url"
+                type="button"
+                class="link danger-link"
+                :disabled="busy"
+                @click="clearPhoto(profile)"
+              >
+                Remove photo
+              </button>
+            </div>
+          </div>
           <label :for="`name-${profile.id}`">Name</label>
           <input
             :id="`name-${profile.id}`"
@@ -114,10 +167,13 @@ onMounted(load)
           />
           <template v-if="isAdmin">
             <label :for="`role-${profile.id}`">Role</label>
-            <select :id="`role-${profile.id}`" v-model="editRole">
+            <select :id="`role-${profile.id}`" v-model="editRole" :disabled="isLastAdmin(profile)">
               <option value="member">Member</option>
               <option value="admin">Admin: can manage profiles</option>
             </select>
+            <p v-if="isLastAdmin(profile)" class="muted small">
+              Every account needs an admin. Make another profile an admin first.
+            </p>
           </template>
           <div class="row">
             <button type="submit" :disabled="busy || editName.trim() === ''">Save</button>
@@ -139,7 +195,7 @@ onMounted(load)
         </div>
 
         <div v-else class="profile-row">
-          <ProfileAvatar :name="profile.name" :id="profile.id" />
+          <ProfileAvatar :name="profile.name" :id="profile.id" :src="profile.avatar_url" />
           <div class="who">
             <strong>{{ profile.name }}</strong>
             <span class="muted small">
@@ -215,6 +271,40 @@ onMounted(load)
 .actions {
   display: flex;
   gap: 1rem;
+}
+
+.photo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.photo-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+/* A label styled as a button opens the hidden file picker. */
+.file-button {
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.file-button:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.file-button.disabled {
+  opacity: 0.55;
+  cursor: default;
 }
 
 .danger-link {

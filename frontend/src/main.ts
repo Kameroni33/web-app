@@ -13,6 +13,8 @@ import { useAuthStore } from './stores/auth'
 
 applyTheme()
 listenForInstallPrompt()
+// iOS Safari only applies :active (our pressed styles) once a touch listener exists.
+document.addEventListener('touchstart', () => {}, { passive: true })
 
 const app = createApp(App)
 
