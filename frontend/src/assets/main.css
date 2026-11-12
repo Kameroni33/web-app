@@ -6,13 +6,17 @@
   --border: #e2e5ea;
   --accent: #0f766e;
   --accent-soft: #ccfbf1;
+  --on-accent: #ffffff;
   --danger: #b91c1c;
+  --warning-bg: #fef3c7;
+  --warning-text: #78350f;
   --radius: 12px;
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
+/* Dark: follows the device unless Settings forces light (data-theme on <html>)… */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
     --bg: #111316;
     --surface: #1b1e23;
     --text: #eceef1;
@@ -20,8 +24,28 @@
     --border: #2b3038;
     --accent: #2dd4bf;
     --accent-soft: #134e4a;
+    --on-accent: #04201d;
     --danger: #f87171;
+    --warning-bg: #422006;
+    --warning-text: #fde68a;
+    color-scheme: dark;
   }
+}
+
+/* …or Settings forces it. Keep in sync with the block above. */
+:root[data-theme='dark'] {
+  --bg: #111316;
+  --surface: #1b1e23;
+  --text: #eceef1;
+  --muted: #9aa1ad;
+  --border: #2b3038;
+  --accent: #2dd4bf;
+  --accent-soft: #134e4a;
+  --on-accent: #04201d;
+  --danger: #f87171;
+  --warning-bg: #422006;
+  --warning-text: #fde68a;
+  color-scheme: dark;
 }
 
 *,
@@ -119,17 +143,11 @@ button {
   padding: 0.7rem 1.1rem;
   font: inherit;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--on-accent);
   background: var(--accent);
   border: 0;
   border-radius: 8px;
   cursor: pointer;
-}
-
-@media (prefers-color-scheme: dark) {
-  button {
-    color: #04201d;
-  }
 }
 
 button:disabled {
@@ -147,4 +165,39 @@ button.link {
 button.danger {
   background: var(--danger);
   color: #ffffff;
+}
+
+button.secondary {
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+select {
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  font-size: max(16px, 1rem);
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.warning {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.back-link {
+  align-self: flex-start;
+  text-decoration: none;
 }

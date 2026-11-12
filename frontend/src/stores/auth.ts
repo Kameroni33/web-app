@@ -2,6 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import * as api from '@/api/auth'
 import type { User } from '@/api/auth'
+import type { Profile } from '@/api/profiles'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
@@ -9,6 +10,8 @@ export const useAuthStore = defineStore('auth', () => {
   let loading: Promise<void> | null = null
 
   const isSignedIn = computed(() => user.value !== null)
+  /** Who is using the app on this device. */
+  const profile = computed(() => user.value?.profile ?? null)
 
   /** Load the session once; the router guard awaits this before every navigation. */
   function ensureLoaded(): Promise<void> {
@@ -43,6 +46,12 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  /** After choosing, creating or renaming the active profile. */
+  function setProfile(next: Profile | null): void {
+    if (!user.value) return
+    user.value = next ? { ...user.value, profile: next } : { id: user.value.id, email: user.value.email }
+  }
+
   /** Forget the user locally, e.g. after the server answers 401. */
   function clearSession(): void {
     user.value = null
@@ -53,6 +62,8 @@ export const useAuthStore = defineStore('auth', () => {
     user,
     loaded,
     isSignedIn,
+    profile,
+    setProfile,
     ensureLoaded,
     signInWithCode,
     signInWithLink,

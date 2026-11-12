@@ -68,6 +68,7 @@ onMounted(load)
 
 <template>
   <main class="narrow stack">
+    <RouterLink to="/settings" class="back-link">‹ Settings</RouterLink>
     <h1>Your devices</h1>
     <p class="muted">Everywhere you’re signed in. Lost a phone? Sign out everywhere else.</p>
 
@@ -133,11 +134,5 @@ onMounted(load)
 
 .small {
   font-size: 0.875rem;
-}
-
-.row {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
 }
 </style>

@@ -1,8 +1,12 @@
 import { ensureCsrfCookie, http } from './http'
+import type { Profile } from './profiles'
 
+/** The signed-in account. */
 export interface User {
   id: number
   email: string
+  /** The profile this device is using; absent until one is chosen. */
+  profile?: Profile
 }
 
 export interface DeviceSession {

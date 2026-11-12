@@ -1,33 +1,8 @@
 <script setup lang="ts">
-import { useRegisterSW } from 'virtual:pwa-register/vue'
+import { useAppUpdate } from '@/composables/useAppUpdate'
 
-/**
- * Shows "A new version is available" after a deploy. The new service worker
- * waits until the user taps Reload, so nobody loses a half-filled form.
- *
- * Installed PWAs can stay open for days, so besides the browser's own
- * checks we look for updates hourly and whenever the app returns to the
- * foreground.
- */
-const CHECK_INTERVAL_MS = 60 * 60 * 1000
-
-const { needRefresh, updateServiceWorker } = useRegisterSW({
-  onRegisteredSW(swUrl, registration) {
-    if (!registration) return
-
-    const check = async () => {
-      if (registration.installing || !navigator.onLine) return
-      // Skip if the server is unreachable or sw.js is gone, rather than throwing.
-      const response = await fetch(swUrl, { cache: 'no-store' }).catch(() => null)
-      if (response?.status === 200) await registration.update()
-    }
-
-    setInterval(check, CHECK_INTERVAL_MS)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') void check()
-    })
-  },
-})
+/** Shows "A new version is available" after a deploy; see useAppUpdate. */
+const { needRefresh, applyUpdate } = useAppUpdate()
 
 function dismiss(): void {
   needRefresh.value = false
@@ -39,7 +14,7 @@ function dismiss(): void {
     <span>A new version is available.</span>
     <div class="actions">
       <button type="button" class="link" @click="dismiss">Later</button>
-      <button type="button" @click="updateServiceWorker(true)">Reload</button>
+      <button type="button" @click="applyUpdate">Reload</button>
     </div>
   </div>
 </template>

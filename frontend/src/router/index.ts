@@ -5,8 +5,10 @@ import { useAuthStore } from '@/stores/auth'
 
 declare module 'vue-router' {
   interface RouteMeta {
-    /** Only for signed-in users; others are sent to /login. */
+    /** Only for signed-in users; others are sent to /login. Also needs a chosen profile. */
     requiresAuth?: boolean
+    /** Signed in, but no profile needed yet (the profile picker itself). */
+    profileOptional?: boolean
     /** Only for signed-out users; signed-in users are sent home. */
     guestOnly?: boolean
     /** Belongs to this app (key from /api/apps); users without it are sent home. */
@@ -42,11 +44,31 @@ const router = createRouter({
       component: () => import('@/views/InstallView.vue'),
     },
     {
-      path: '/devices',
-      name: 'devices',
-      component: () => import('@/views/DevicesView.vue'),
+      // "Who's using Kam Apps?", or naming the first profile on first sign-in.
+      path: '/profiles/choose',
+      name: 'choose-profile',
+      component: () => import('@/views/ChooseProfileView.vue'),
+      meta: { requiresAuth: true, profileOptional: true },
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: () => import('@/views/settings/SettingsView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/settings/profiles',
+      name: 'settings-profiles',
+      component: () => import('@/views/settings/ProfilesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    {
+      path: '/settings/devices',
+      name: 'settings-devices',
+      component: () => import('@/views/settings/DevicesView.vue'),
+      meta: { requiresAuth: true },
+    },
+    { path: '/devices', redirect: '/settings/devices' },
     ...giftsRoutes,
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
@@ -65,6 +87,9 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.guestOnly && auth.isSignedIn) {
     return { name: 'home' }
+  }
+  if (to.meta.requiresAuth && !auth.profile && !to.meta.profileOptional) {
+    return { name: 'choose-profile', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
   }
   if (to.meta.app) {
     const apps = useAppsStore()

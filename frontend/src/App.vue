@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import AppUpdatePrompt from '@/components/AppUpdatePrompt.vue'
+import ProfileAvatar from '@/components/ProfileAvatar.vue'
 import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const appsStore = useAppsStore()
 const route = useRoute()
-const router = useRouter()
 
 /** The app the current page belongs to, shown next to the brand. */
 const currentApp = computed(() => (route.meta.app ? appsStore.find(route.meta.app) : undefined))
@@ -18,11 +18,6 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
   dateStyle: 'medium',
   timeStyle: 'short',
 })
-
-async function signOut(): Promise<void> {
-  await auth.signOut()
-  await router.replace('/login')
-}
 </script>
 
 <template>
@@ -37,10 +32,15 @@ async function signOut(): Promise<void> {
         <span class="app-name">{{ currentApp.name }}</span>
       </template>
     </div>
-    <nav v-if="auth.isSignedIn">
-      <RouterLink to="/devices">Devices</RouterLink>
-      <button type="button" class="link" @click="signOut">Sign out</button>
-    </nav>
+    <RouterLink
+      v-if="auth.profile"
+      :to="{ name: 'settings' }"
+      class="me-link"
+      :aria-label="`${auth.profile.name}, settings`"
+    >
+      <span class="me-name">{{ auth.profile.name }}</span>
+      <ProfileAvatar :name="auth.profile.name" :id="auth.profile.id" :size="32" />
+    </RouterLink>
   </header>
 
   <RouterView />
@@ -107,14 +107,26 @@ async function signOut(): Promise<void> {
   }
 }
 
-nav {
+.me-link {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
 }
 
-nav a {
-  text-decoration: none;
+.me-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 10rem;
+}
+
+@media (max-width: 30rem) {
+  .me-name {
+    display: none;
+  }
 }
 
 .app-footer {

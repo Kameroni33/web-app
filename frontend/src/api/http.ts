@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios'
+import { recordServerVersion } from './version'
 
 /**
  * Same-origin client for Laravel. Sanctum SPA auth: the session lives in an
@@ -23,6 +24,18 @@ export function ensureCsrfCookie(force = false): Promise<unknown> {
   }
   return csrfReady
 }
+
+// Every Laravel response says which release answered; Settings compares it with ours.
+http.interceptors.response.use(
+  (response) => {
+    recordServerVersion(response.headers)
+    return response
+  },
+  (error: unknown) => {
+    if (error instanceof AxiosError) recordServerVersion(error.response?.headers)
+    throw error
+  },
+)
 
 type RetriableConfig = InternalAxiosRequestConfig & { _csrfRetried?: boolean }
 

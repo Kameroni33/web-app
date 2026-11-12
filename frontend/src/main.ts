@@ -8,8 +8,10 @@ import App from './App.vue'
 import router from './router'
 import { http } from './api/http'
 import { listenForInstallPrompt } from './composables/useInstallPrompt'
+import { applyTheme } from './composables/useTheme'
 import { useAuthStore } from './stores/auth'
 
+applyTheme()
 listenForInstallPrompt()
 
 const app = createApp(App)
@@ -27,6 +29,18 @@ http.interceptors.response.use(undefined, async (error) => {
     const current = router.currentRoute.value
     if (current.meta.requiresAuth) {
       await router.replace({ name: 'login', query: { redirect: current.fullPath } })
+    }
+  }
+  // This device's profile was deleted (or never chosen): ask who's using the app.
+  if (
+    error instanceof AxiosError &&
+    error.response?.status === 409 &&
+    (error.response.data as { code?: string } | undefined)?.code === 'profile_required'
+  ) {
+    auth.setProfile(null)
+    const current = router.currentRoute.value
+    if (current.name !== 'choose-profile') {
+      await router.replace({ name: 'choose-profile', query: { redirect: current.fullPath } })
     }
   }
   throw error
