@@ -31,7 +31,7 @@ export default defineConfig({
         id: '/',
         name: 'Kam Apps',
         short_name: 'Kam Apps',
-        description: 'Family gift lists, groceries, recipes and more.',
+        description: 'Gifts, food and money tools for the family.',
         start_url: '/',
         scope: '/',
         display: 'standalone',

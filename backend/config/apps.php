@@ -15,8 +15,18 @@
 return [
 
     'gifts' => [
-        'name' => 'Gift Lists',
+        'name' => 'Gifts',
         'description' => 'Wish lists, and who is buying what.',
+    ],
+
+    'food' => [
+        'name' => 'Food',
+        'description' => 'Recipes and the grocery list.',
+    ],
+
+    'money' => [
+        'name' => 'Money',
+        'description' => 'Budgets, bills and spending.',
     ],
 
 ];

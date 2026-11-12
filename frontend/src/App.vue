@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import AppUpdatePrompt from '@/components/AppUpdatePrompt.vue'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
@@ -12,6 +12,22 @@ const route = useRoute()
 
 /** The app the current page belongs to, shown next to the brand. */
 const currentApp = computed(() => (route.meta.app ? appsStore.find(route.meta.app) : undefined))
+
+// Inside an app, its colours replace the brand accent (both themes, via light-dark()).
+watchEffect(() => {
+  const style = document.documentElement.style
+  const theme = currentApp.value?.theme
+  if (theme) {
+    style.setProperty('--accent', `light-dark(${theme.accent[0]}, ${theme.accent[1]})`)
+    style.setProperty('--accent-soft', `light-dark(${theme.accentSoft[0]}, ${theme.accentSoft[1]})`)
+  } else {
+    style.removeProperty('--accent')
+    style.removeProperty('--accent-soft')
+  }
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute('content', theme?.accent[0] ?? '#0f766e')
+})
 
 const version = import.meta.env.DEV ? `${__APP_VERSION__}-dev` : __APP_VERSION__
 const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {

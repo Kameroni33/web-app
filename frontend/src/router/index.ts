@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { foodRoutes } from '@/apps/food/routes'
 import { giftsRoutes } from '@/apps/gifts/routes'
+import { moneyRoutes } from '@/apps/money/routes'
 import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
@@ -70,6 +72,8 @@ const router = createRouter({
     },
     { path: '/devices', redirect: '/settings/devices' },
     ...giftsRoutes,
+    ...foodRoutes,
+    ...moneyRoutes,
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })

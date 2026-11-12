@@ -4,7 +4,7 @@ export const giftsRoutes: RouteRecordRaw[] = [
   {
     path: '/gifts',
     name: 'gifts',
-    component: () => import('./GiftsHomeView.vue'),
+    component: () => import('@/apps/ComingSoonView.vue'),
     meta: { requiresAuth: true, app: 'gifts' },
   },
 ]
