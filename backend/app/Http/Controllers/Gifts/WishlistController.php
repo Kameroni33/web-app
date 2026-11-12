@@ -2,48 +2,55 @@
 
 namespace App\Http\Controllers\Gifts;
 
+use App\Auth\ActiveProfile;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\Gifts\StoreGiftWishlistRequest;
+use App\Http\Resources\Gifts\GiftWishlistResource;
+use App\Models\GiftWishlist;
+use App\Models\Profile;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
+/**
+ * The active profile's links to wish lists on other sites.
+ */
 class WishlistController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(private ActiveProfile $activeProfile) {}
+
+    public function index(): AnonymousResourceCollection
     {
-        //
+        return GiftWishlistResource::collection($this->me()->giftWishlists);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreGiftWishlistRequest $request): GiftWishlistResource
     {
-        //
+        return new GiftWishlistResource($this->me()->giftWishlists()->create($request->validated()));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function update(StoreGiftWishlistRequest $request, GiftWishlist $wishlist): GiftWishlistResource
     {
-        //
+        $this->authorizeOwner($wishlist);
+        $wishlist->update($request->validated());
+
+        return new GiftWishlistResource($wishlist);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function destroy(GiftWishlist $wishlist): Response
     {
-        //
+        $this->authorizeOwner($wishlist);
+        $wishlist->delete();
+
+        return response()->noContent();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    private function me(): Profile
     {
-        //
+        return $this->activeProfile->get();
+    }
+
+    private function authorizeOwner(GiftWishlist $wishlist): void
+    {
+        abort_unless($wishlist->profile_id === $this->me()->id, 404);
     }
 }
