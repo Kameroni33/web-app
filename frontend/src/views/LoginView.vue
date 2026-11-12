@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { requestLoginCode } from '@/api/auth'
 import { errorMessage } from '@/api/http'
@@ -70,6 +70,18 @@ function onCodeInput(event: Event): void {
   code.value = (event.target as HTMLInputElement).value.replace(/\D/g, '').slice(0, 6)
   if (code.value.length === 6) void verify()
 }
+
+// Arriving from an invite: the code was already sent to this address.
+onMounted(() => {
+  const { email: invited, sent } = route.query
+  if (typeof invited === 'string' && invited !== '') {
+    email.value = invited
+    if (sent === '1') {
+      step.value = 'code'
+      startResendCooldown()
+    }
+  }
+})
 
 function changeEmail(): void {
   step.value = 'email'

@@ -10,11 +10,18 @@ import * as api from '@/api/apps'
 import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
+const account = (id: number) => ({
+  id,
+  email: `user${id}@example.com`,
+  is_admin: false,
+  can: { manage_groups: false },
+})
+
 describe('apps store', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.resetAllMocks()
-    useAuthStore().user = { id: 1, email: 'mom@example.com' }
+    useAuthStore().user = account(1)
   })
 
   it('shows only apps this build knows how to open', async () => {
@@ -37,7 +44,7 @@ describe('apps store', () => {
     const apps = useAppsStore()
     await apps.ensureLoaded()
 
-    useAuthStore().user = { id: 2, email: 'dad@example.com' }
+    useAuthStore().user = account(2)
     await nextTick()
 
     expect(apps.loaded).toBe(false)

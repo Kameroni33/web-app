@@ -11,7 +11,7 @@ vi.mock('@/api/auth', () => ({
 import * as api from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 
-const user = { id: 1, email: 'mom@example.com' }
+const user = { id: 1, email: 'mom@example.com', is_admin: false, can: { manage_groups: false } }
 
 describe('auth store', () => {
   beforeEach(() => {

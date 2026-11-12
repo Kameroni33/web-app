@@ -13,6 +13,8 @@ declare module 'vue-router' {
     profileOptional?: boolean
     /** Only for signed-out users; signed-in users are sent home. */
     guestOnly?: boolean
+    /** Admin accounts only (me.can.manage_groups). */
+    requiresGroupAdmin?: boolean
     /** Belongs to this app (key from /api/apps); users without it are sent home. */
     app?: string
   }
@@ -70,6 +72,24 @@ const router = createRouter({
       component: () => import('@/views/settings/DevicesView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/settings/families',
+      name: 'admin-families',
+      component: () => import('@/views/settings/admin/FamiliesView.vue'),
+      meta: { requiresAuth: true, requiresGroupAdmin: true },
+    },
+    {
+      path: '/settings/families/:id(\\d+)',
+      name: 'admin-family',
+      component: () => import('@/views/settings/admin/FamilyView.vue'),
+      meta: { requiresAuth: true, requiresGroupAdmin: true },
+    },
+    {
+      // Public: invite links work signed in or out.
+      path: '/invite/:token',
+      name: 'invite',
+      component: () => import('@/views/InviteView.vue'),
+    },
     { path: '/devices', redirect: '/settings/devices' },
     ...giftsRoutes,
     ...foodRoutes,
@@ -94,6 +114,9 @@ router.beforeEach(async (to) => {
   }
   if (to.meta.requiresAuth && !auth.profile && !to.meta.profileOptional) {
     return { name: 'choose-profile', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
+  }
+  if (to.meta.requiresGroupAdmin && !auth.user?.can.manage_groups) {
+    return { name: 'settings' }
   }
   if (to.meta.app) {
     const apps = useAppsStore()

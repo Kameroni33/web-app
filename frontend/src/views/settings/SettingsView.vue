@@ -90,6 +90,12 @@ onMounted(load)
       </ul>
     </section>
 
+    <section v-if="auth.user?.can.manage_groups" class="card stack">
+      <h2>Admin</h2>
+      <p class="muted small">Create families and invite people to Kam Apps.</p>
+      <RouterLink :to="{ name: 'admin-families' }">Manage families</RouterLink>
+    </section>
+
     <section class="card stack">
       <h2 id="theme-label">Appearance</h2>
       <div class="segmented" role="radiogroup" aria-labelledby="theme-label">

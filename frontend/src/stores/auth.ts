@@ -49,7 +49,16 @@ export const useAuthStore = defineStore('auth', () => {
   /** After choosing, creating or renaming the active profile. */
   function setProfile(next: Profile | null): void {
     if (!user.value) return
-    user.value = next ? { ...user.value, profile: next } : { id: user.value.id, email: user.value.email }
+    const account = { ...user.value }
+    delete account.profile
+    // Admin powers depend on the profile, so re-check them with the server.
+    user.value = next ? { ...account, profile: next } : account
+    if (account.is_admin) void refresh()
+  }
+
+  /** Reload the account from the server (e.g. after switching profiles). */
+  async function refresh(): Promise<void> {
+    user.value = await api.fetchCurrentUser()
   }
 
   /** Forget the user locally, e.g. after the server answers 401. */
@@ -64,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
     isSignedIn,
     profile,
     setProfile,
+    refresh,
     ensureLoaded,
     signInWithCode,
     signInWithLink,

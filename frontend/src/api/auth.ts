@@ -5,6 +5,10 @@ import type { Profile } from './profiles'
 export interface User {
   id: number
   email: string
+  /** Admin account (granted from the command line). */
+  is_admin: boolean
+  /** What the app should offer; the server checks again on every request. */
+  can: { manage_groups: boolean }
   /** The profile this device is using; absent until one is chosen. */
   profile?: Profile
 }
