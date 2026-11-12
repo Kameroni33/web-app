@@ -14,7 +14,8 @@ use Illuminate\Support\Str;
 #[Signature('accounts:create
     {email : Email address that will receive sign-in codes}
     {--name= : Name for the admin profile (otherwise asked on first sign-in)}
-    {--group=* : Group id to join (repeatable); omit for an account in no family}')]
+    {--group=* : Group id to join (repeatable); omit for an account in no family}
+    {--admin : Make it an admin account (see accounts:admin)}')]
 #[Description('Create an account so that email address can sign in (there is no public signup)')]
 class CreateAccount extends Command
 {
@@ -57,6 +58,11 @@ class CreateAccount extends Command
         if ($name !== null && ! $user->profiles()->exists()) {
             $user->profiles()->create(['name' => $name, 'role' => ProfileRole::Admin]);
             $this->components->info("Added admin profile \"{$name}\".");
+        }
+
+        if ($this->option('admin') && ! $user->is_admin) {
+            $user->forceFill(['is_admin' => true])->save();
+            $this->components->info('Made it an admin account.');
         }
 
         foreach ($groups as $group) {

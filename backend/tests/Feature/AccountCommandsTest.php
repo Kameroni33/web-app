@@ -71,4 +71,41 @@ class AccountCommandsTest extends TestCase
         $this->artisan('groups:remove-member', ['group' => $group->id, 'email' => 'mom@example.com'])->assertFailed();
         $this->assertCount(0, $user->groups()->get());
     }
+
+    public function test_admin_and_invite_commands(): void
+    {
+        $user = User::factory()->create(['email' => 'kam@example.com']);
+        $this->artisan('accounts:admin', ['email' => 'kam@example.com'])->assertSuccessful();
+        $this->assertTrue($user->fresh()->is_admin);
+        $this->artisan('accounts:admin', ['email' => 'kam@example.com', '--revoke' => true])->assertSuccessful();
+        $this->assertFalse($user->fresh()->is_admin);
+
+        $group = Group::factory()->create(['name' => 'Old name']);
+        $this->artisan('groups:rename', ['group' => $group->id, 'name' => 'Robinson family'])->assertSuccessful();
+        $this->assertSame('Robinson family', $group->fresh()->name);
+
+        $this->artisan('groups:invite', ['group' => $group->id, '--uses' => 0, '--days' => 30])
+            ->expectsOutputToContain('/invite/')
+            ->assertSuccessful();
+        $this->artisan('groups:invite', ['group' => $group->id, '--days' => 365])->assertFailed();
+        $invite = $group->invites()->sole();
+        $this->assertNull($invite->max_uses);
+
+        $this->artisan('groups:invites')->assertSuccessful();
+        $this->artisan('groups:revoke-invite', ['invite' => $invite->id])->assertSuccessful();
+        $this->assertSame('revoked', $invite->fresh()->status());
+
+        $this->artisan('groups:delete', ['group' => $group->id])
+            ->expectsConfirmation('Delete Robinson family (0 members)?', 'no')
+            ->assertFailed();
+        $this->artisan('groups:delete', ['group' => $group->id, '--force' => true])->assertSuccessful();
+        $this->assertModelMissing($group);
+    }
+
+    public function test_accounts_create_can_make_an_admin(): void
+    {
+        $this->artisan('accounts:create', ['email' => 'kam@example.com', '--admin' => true])->assertSuccessful();
+
+        $this->assertTrue(User::query()->sole()->is_admin);
+    }
 }

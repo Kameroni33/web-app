@@ -8,10 +8,11 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * A set of accounts that share with each other; shown as a "family" in the app.
- * Managed from the command line only (groups:* commands).
+ * Managed by admin accounts, in the app or with the groups:* commands.
  */
 #[Fillable(['name'])]
 class Group extends Model
@@ -29,6 +30,14 @@ class Group extends Model
             ->as('membership')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<GroupInvite, $this>
+     */
+    public function invites(): HasMany
+    {
+        return $this->hasMany(GroupInvite::class);
     }
 
     /**
