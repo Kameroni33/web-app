@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackLink from '@/components/BackLink.vue'
 import { computed, onMounted, ref } from 'vue'
 import { listSessions, signOutOtherSessions, type DeviceSession } from '@/api/auth'
 import { errorMessage } from '@/api/http'
@@ -68,7 +69,7 @@ onMounted(load)
 
 <template>
   <main class="narrow stack">
-    <RouterLink to="/settings" class="back-link">‹ Settings</RouterLink>
+    <BackLink to="/settings">‹ Settings</BackLink>
     <h1>Your devices</h1>
     <p class="muted">Everywhere you’re signed in. Lost a phone? Sign out everywhere else.</p>
 

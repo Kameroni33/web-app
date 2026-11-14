@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { errorMessage } from '@/api/http'
@@ -11,6 +12,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
+const nav = useAppNavigation()
 const { theme, setTheme } = useTheme()
 const update = useAppUpdate()
 
@@ -49,7 +51,7 @@ async function switchProfile(): Promise<void> {
 
 async function signOut(): Promise<void> {
   await auth.signOut().catch(() => undefined)
-  await router.replace('/login')
+  await nav.startAt('/login')
 }
 
 onMounted(load)
@@ -133,8 +135,8 @@ onMounted(load)
         <dd>{{ serverVersion ?? 'Unknown' }}</dd>
       </dl>
       <p v-if="!versionsMatch" class="warning" role="status">
-        This app and the server are on different versions. Reload to get the latest version; if
-        that doesn’t help, close and reopen the app.
+        This app and the server are on different versions. Reload to get the latest version; if that
+        doesn’t help, close and reopen the app.
       </p>
       <div class="row">
         <button v-if="update.needRefresh.value" type="button" @click="update.applyUpdate">

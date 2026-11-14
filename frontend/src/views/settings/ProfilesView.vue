@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackLink from '@/components/BackLink.vue'
 import { computed, onMounted, ref } from 'vue'
 import { errorMessage } from '@/api/http'
 import {
@@ -71,6 +72,11 @@ function startEdit(profile: Profile): void {
   deletingId.value = null
 }
 
+function startDelete(profile: Profile): void {
+  deletingId.value = profile.id
+  editingId.value = null
+}
+
 const saveEdit = (profile: Profile) =>
   run(async () => {
     const changes: { name: string; role?: ProfileRole } = { name: editName.value.trim() }
@@ -114,7 +120,7 @@ onMounted(load)
 
 <template>
   <main class="narrow stack">
-    <RouterLink to="/settings" class="back-link">‹ Settings</RouterLink>
+    <BackLink to="/settings">‹ Settings</BackLink>
     <h1>Profiles</h1>
     <p class="muted">
       Everyone who signs in with {{ auth.user?.email }}. Each person picks their profile on their
@@ -183,8 +189,8 @@ onMounted(load)
 
         <div v-else-if="deletingId === profile.id" class="stack">
           <p>
-            Delete <strong>{{ profile.name }}</strong>? Anything that belongs to this profile will
-            be deleted too. This can’t be undone.
+            Delete <strong>{{ profile.name }}</strong
+            >? Anything that belongs to this profile will be deleted too. This can’t be undone.
           </p>
           <div class="row">
             <button type="button" class="danger" :disabled="busy" @click="confirmDelete(profile)">
@@ -215,7 +221,7 @@ onMounted(load)
               v-if="isAdmin && !isMe(profile)"
               type="button"
               class="link danger-link"
-              @click="deletingId = profile.id; editingId = null"
+              @click="startDelete(profile)"
             >
               Delete
             </button>
@@ -236,7 +242,9 @@ onMounted(load)
       </select>
       <button type="submit" :disabled="busy || newName.trim() === ''">Add profile</button>
     </form>
-    <p v-else-if="!loading" class="muted small">Only an admin profile can add or remove profiles.</p>
+    <p v-else-if="!loading" class="muted small">
+      Only an admin profile can add or remove profiles.
+    </p>
   </main>
 </template>
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackLink from '@/components/BackLink.vue'
 import { useInstallPrompt } from '@/composables/useInstallPrompt'
 
 const { installed, canPrompt, promptInstall } = useInstallPrompt()
@@ -48,7 +49,7 @@ const { installed, canPrompt, promptInstall } = useInstallPrompt()
       </p>
     </section>
 
-    <RouterLink to="/">Back to the app</RouterLink>
+    <BackLink to="/">Back to the app</BackLink>
   </main>
 </template>
 

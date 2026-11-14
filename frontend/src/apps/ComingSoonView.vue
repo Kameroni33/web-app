@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import HomeLink from '@/components/HomeLink.vue'
 import { useAppsStore } from '@/stores/apps'
 
 /** Placeholder home page for an app that isn't built yet. */
@@ -20,7 +21,7 @@ const app = computed(() => (route.meta.app ? appsStore.find(route.meta.app) : un
     </div>
     <section class="card coming-soon">
       <p><strong>Coming soon.</strong> This app is still being built.</p>
-      <RouterLink :to="{ name: 'home' }">‹ All apps</RouterLink>
+      <HomeLink>‹ All apps</HomeLink>
     </section>
   </main>
 </template>

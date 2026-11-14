@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -55,6 +56,22 @@ class Profile extends Model
         return $this->avatar_version === null
             ? null
             : "/api/profiles/{$this->id}/avatar?v={$this->avatar_version}";
+    }
+
+    /**
+     * @return HasMany<GiftItem, $this>
+     */
+    public function giftItems(): HasMany
+    {
+        return $this->hasMany(GiftItem::class);
+    }
+
+    /**
+     * @return HasMany<GiftWishlist, $this>
+     */
+    public function giftWishlists(): HasMany
+    {
+        return $this->hasMany(GiftWishlist::class)->orderBy('id');
     }
 
     public function isAdmin(): bool

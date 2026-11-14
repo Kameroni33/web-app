@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { requestLoginCode } from '@/api/auth'
 import { errorMessage } from '@/api/http'
 import { useAuthStore } from '@/stores/auth'
@@ -9,7 +10,7 @@ const RESEND_COOLDOWN_S = 30
 
 const auth = useAuthStore()
 const route = useRoute()
-const router = useRouter()
+const nav = useAppNavigation()
 
 const step = ref<'email' | 'code'>('email')
 const email = ref('')
@@ -57,7 +58,7 @@ async function verify(): Promise<void> {
   error.value = ''
   try {
     await auth.signInWithCode(email.value.trim(), code.value)
-    await router.replace(safeRedirect())
+    await nav.startAt(safeRedirect())
   } catch (e) {
     error.value = errorMessage(e)
     code.value = ''

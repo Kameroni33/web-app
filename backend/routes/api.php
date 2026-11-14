@@ -7,6 +7,12 @@ use App\Http\Controllers\Admin\GroupMemberController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\SessionController;
 use App\Http\Controllers\AvailableAppController;
+use App\Http\Controllers\Gifts\ClaimController;
+use App\Http\Controllers\Gifts\ItemOrderController;
+use App\Http\Controllers\Gifts\ListController;
+use App\Http\Controllers\Gifts\MyItemController;
+use App\Http\Controllers\Gifts\PeopleController;
+use App\Http\Controllers\Gifts\WishlistController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\ProfileAvatarController;
@@ -60,6 +66,17 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('profiles/{profile}/avatar', [ProfileAvatarController::class, 'destroy'])->name('profiles.avatar.destroy');
         Route::get('groups', [GroupController::class, 'index'])->name('groups.index');
         Route::get('apps', AvailableAppController::class)->name('apps.index');
+
+        // Gifts: your own list, and the lists of people you share an account or family with.
+        Route::prefix('gifts')->name('gifts.')->group(function () {
+            Route::put('items/order', ItemOrderController::class)->name('items.order');
+            Route::apiResource('items', MyItemController::class)->except('show');
+            Route::apiResource('wishlists', WishlistController::class)->except('show');
+            Route::get('people', PeopleController::class)->name('people');
+            Route::get('lists/{profile}', ListController::class)->name('lists.show');
+            Route::post('items/{item}/claim', [ClaimController::class, 'store'])->name('items.claim');
+            Route::delete('items/{item}/claim', [ClaimController::class, 'destroy'])->name('items.unclaim');
+        });
 
         // Admin accounts (accounts:admin), using their admin profile.
         Route::prefix('admin')->name('admin.')->middleware('can:manage-groups')->group(function () {

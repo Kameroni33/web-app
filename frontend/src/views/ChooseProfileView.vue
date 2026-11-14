@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { errorMessage } from '@/api/http'
 import { createProfile, listProfiles, selectProfile, type Profile } from '@/api/profiles'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
@@ -12,7 +13,7 @@ import { useAuthStore } from '@/stores/auth'
  */
 const auth = useAuthStore()
 const route = useRoute()
-const router = useRouter()
+const nav = useAppNavigation()
 
 const profiles = ref<Profile[] | null>(null)
 const name = ref('')
@@ -40,7 +41,7 @@ async function choose(profile: Profile): Promise<void> {
   error.value = ''
   try {
     auth.setProfile(await selectProfile(profile.id))
-    await router.replace(safeRedirect())
+    await nav.startAt(safeRedirect())
   } catch (e) {
     error.value = errorMessage(e)
   } finally {
@@ -53,7 +54,7 @@ async function setUp(): Promise<void> {
   error.value = ''
   try {
     auth.setProfile(await createProfile(name.value.trim()))
-    await router.replace(safeRedirect())
+    await nav.startAt(safeRedirect())
   } catch (e) {
     error.value = errorMessage(e)
   } finally {
@@ -63,7 +64,7 @@ async function setUp(): Promise<void> {
 
 async function signOut(): Promise<void> {
   await auth.signOut().catch(() => undefined)
-  await router.replace('/login')
+  await nav.startAt('/login')
 }
 
 onMounted(load)
