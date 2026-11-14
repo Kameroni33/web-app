@@ -72,6 +72,11 @@ function startEdit(profile: Profile): void {
   deletingId.value = null
 }
 
+function startDelete(profile: Profile): void {
+  deletingId.value = profile.id
+  editingId.value = null
+}
+
 const saveEdit = (profile: Profile) =>
   run(async () => {
     const changes: { name: string; role?: ProfileRole } = { name: editName.value.trim() }
@@ -216,10 +221,7 @@ onMounted(load)
               v-if="isAdmin && !isMe(profile)"
               type="button"
               class="link danger-link"
-              @click="
-                deletingId = profile.id
-                editingId = null
-              "
+              @click="startDelete(profile)"
             >
               Delete
             </button>
