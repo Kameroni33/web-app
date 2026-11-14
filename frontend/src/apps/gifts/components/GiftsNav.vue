@@ -1,7 +1,7 @@
 <template>
   <nav class="gifts-nav" aria-label="Gifts">
-    <RouterLink :to="{ name: 'gifts' }" exact-active-class="active">My list</RouterLink>
-    <RouterLink :to="{ name: 'gifts-people' }" active-class="active">People</RouterLink>
+    <RouterLink replace :to="{ name: 'gifts' }" exact-active-class="active">My list</RouterLink>
+    <RouterLink replace :to="{ name: 'gifts-people' }" active-class="active">People</RouterLink>
   </nav>
 </template>
 

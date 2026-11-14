@@ -63,7 +63,13 @@ onMounted(() => {
     <GiftsNav />
 
     <form class="add" @submit.prevent="add">
-      <input v-model="newTitle" type="text" maxlength="200" placeholder="Add an item" aria-label="New item" />
+      <input
+        v-model="newTitle"
+        type="text"
+        maxlength="200"
+        placeholder="Add an item"
+        aria-label="New item"
+      />
       <button type="submit" :disabled="adding || !newTitle.trim()" aria-label="Add">+</button>
     </form>
 
@@ -98,9 +104,12 @@ onMounted(() => {
       <li v-for="item in shown" :key="item.id">
         <span v-if="filter === null" class="handle" aria-hidden="true">
           <svg width="10" height="16" viewBox="0 0 10 16" fill="currentColor">
-            <circle cx="2" cy="2" r="1.5" /><circle cx="8" cy="2" r="1.5" />
-            <circle cx="2" cy="8" r="1.5" /><circle cx="8" cy="8" r="1.5" />
-            <circle cx="2" cy="14" r="1.5" /><circle cx="8" cy="14" r="1.5" />
+            <circle cx="2" cy="2" r="1.5" />
+            <circle cx="8" cy="2" r="1.5" />
+            <circle cx="2" cy="8" r="1.5" />
+            <circle cx="8" cy="8" r="1.5" />
+            <circle cx="2" cy="14" r="1.5" />
+            <circle cx="8" cy="14" r="1.5" />
           </svg>
         </span>
         <RouterLink :to="{ name: 'gifts-item', params: { id: item.id } }" class="item">
@@ -133,7 +142,9 @@ onMounted(() => {
         <li v-for="item in gifts.received" :key="item.id">
           <span class="title done">{{ item.title }}</span>
           <button type="button" class="link" @click="undoReceived(item)">Undo</button>
-          <button type="button" class="link danger-link" @click="removeReceived(item)">Delete</button>
+          <button type="button" class="link danger-link" @click="removeReceived(item)">
+            Delete
+          </button>
         </li>
       </ul>
     </details>

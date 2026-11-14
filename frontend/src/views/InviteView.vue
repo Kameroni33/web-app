@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { errorMessage } from '@/api/http'
@@ -13,6 +14,7 @@ import { useAuthStore } from '@/stores/auth'
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
+const nav = useAppNavigation()
 
 const token = computed(() => String(route.params.token))
 const invite = ref<InvitePreview | null>(null)
@@ -52,7 +54,7 @@ async function join(): Promise<void> {
   try {
     await acceptInvite(token.value)
     // New accounts are asked for their name next (router guard).
-    await router.replace({ name: 'home' })
+    await nav.startAt({ name: 'home' })
   } catch (e) {
     error.value = errorMessage(e)
   } finally {

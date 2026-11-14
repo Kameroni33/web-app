@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
+import BackLink from '@/components/BackLink.vue'
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { errorMessage } from '@/api/http'
 import { listProfiles, selectProfile, type Profile } from '@/api/profiles'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
@@ -10,7 +11,7 @@ import LinkChips from '../components/LinkChips.vue'
 
 const props = defineProps<{ profileId: string }>()
 const auth = useAuthStore()
-const router = useRouter()
+const nav = useAppNavigation()
 
 const list = ref<TheirList | null>(null)
 const error = ref('')
@@ -37,7 +38,7 @@ async function viewAnyway(): Promise<void> {
 async function switchTo(profile: Profile): Promise<void> {
   try {
     auth.setProfile(await selectProfile(profile.id))
-    await router.replace({ name: 'gifts' })
+    await nav.startAt({ name: 'gifts' })
   } catch (e) {
     error.value = errorMessage(e)
   }
@@ -75,7 +76,7 @@ onMounted(async () => {
 
 <template>
   <main class="narrow stack">
-    <RouterLink :to="{ name: 'gifts-people' }" class="back-link">‹ People</RouterLink>
+    <BackLink :to="{ name: 'gifts-people' }">‹ People</BackLink>
 
     <p v-if="error" class="error" role="alert">{{ error }}</p>
 

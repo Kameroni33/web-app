@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { foodRoutes } from '@/apps/food/routes'
 import { giftsRoutes } from '@/apps/gifts/routes'
 import { moneyRoutes } from '@/apps/money/routes'
+import { landedOnAnotherProfile, tagEntry } from '@/router/navigation'
 import { useAppsStore } from '@/stores/apps'
 import { useAuthStore } from '@/stores/auth'
 
@@ -98,7 +99,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
   const auth = useAuthStore()
   try {
     await auth.ensureLoaded()
@@ -115,6 +116,10 @@ router.beforeEach(async (to) => {
   if (to.meta.requiresAuth && !auth.profile && !to.meta.profileOptional) {
     return { name: 'choose-profile', query: to.fullPath === '/' ? {} : { redirect: to.fullPath } }
   }
+  // Back/forward onto a screen from before a profile switch: start over at home.
+  if (landedOnAnotherProfile(from, auth.profile?.id ?? null)) {
+    return { name: 'home', replace: true }
+  }
   if (to.meta.requiresGroupAdmin && !auth.user?.can.manage_groups) {
     return { name: 'settings' }
   }
@@ -127,6 +132,10 @@ router.beforeEach(async (to) => {
     }
     if (!apps.find(to.meta.app)) return { name: 'home' }
   }
+})
+
+router.afterEach((_to, _from, failure) => {
+  tagEntry(useAuthStore().profile?.id ?? null, !failure)
 })
 
 export default router

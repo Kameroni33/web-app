@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackLink from '@/components/BackLink.vue'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { createFamily, listAdminFamilies, type AdminFamily } from '@/api/admin'
@@ -38,7 +39,7 @@ onMounted(load)
 
 <template>
   <main class="narrow stack">
-    <RouterLink to="/settings" class="back-link">‹ Settings</RouterLink>
+    <BackLink to="/settings">‹ Settings</BackLink>
     <h1>Manage families</h1>
     <p class="muted">
       Families decide what’s shared with whom. People join a family through an invite link.

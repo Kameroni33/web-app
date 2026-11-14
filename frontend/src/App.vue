@@ -2,6 +2,7 @@
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import AppUpdatePrompt from '@/components/AppUpdatePrompt.vue'
+import HomeLink from '@/components/HomeLink.vue'
 import ProfileAvatar from '@/components/ProfileAvatar.vue'
 import { useInstallPrompt } from '@/composables/useInstallPrompt'
 import { useAppsStore } from '@/stores/apps'
@@ -42,10 +43,10 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
 <template>
   <header class="app-header">
     <div class="brand">
-      <RouterLink to="/" class="home-link">
+      <HomeLink class="home-link">
         <img :src="logoUrl" alt="" width="28" height="28" />
         <span :class="{ 'hide-narrow': currentApp }">Kam Apps</span>
-      </RouterLink>
+      </HomeLink>
       <template v-if="currentApp">
         <span class="separator" aria-hidden="true">/</span>
         <span class="app-name">{{ currentApp.name }}</span>
@@ -71,9 +72,7 @@ const buildTime = new Date(__APP_BUILD_TIME__).toLocaleString(undefined, {
 
   <footer class="app-footer muted">
     <span :title="`Built ${buildTime}`">Kam Apps v{{ version }}</span>
-    <template v-if="!installed">
-      · <RouterLink to="/install">Install</RouterLink>
-    </template>
+    <template v-if="!installed"> · <RouterLink to="/install">Install</RouterLink> </template>
   </footer>
 
   <AppUpdatePrompt />

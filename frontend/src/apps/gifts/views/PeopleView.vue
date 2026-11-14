@@ -30,7 +30,9 @@ onMounted(async () => {
     <template v-else>
       <section
         v-for="group in [
-          ...(people.account.length ? [{ id: 0, name: 'This account', people: people.account }] : []),
+          ...(people.account.length
+            ? [{ id: 0, name: 'This account', people: people.account }]
+            : []),
           ...people.families,
         ]"
         :key="group.id"
@@ -40,7 +42,12 @@ onMounted(async () => {
         <ul class="card people">
           <li v-for="person in group.people" :key="person.id">
             <RouterLink :to="{ name: 'gifts-list', params: { profileId: person.id } }">
-              <ProfileAvatar :name="person.name" :id="person.id" :src="person.avatar_url" :size="36" />
+              <ProfileAvatar
+                :name="person.name"
+                :id="person.id"
+                :src="person.avatar_url"
+                :size="36"
+              />
               <span>{{ person.name }}</span>
               <span class="chevron" aria-hidden="true">›</span>
             </RouterLink>

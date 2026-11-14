@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
+import BackLink from '@/components/BackLink.vue'
 import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import {
   createInvite,
   deleteFamily,
@@ -18,7 +20,7 @@ import { useAuthStore } from '@/stores/auth'
 /** Admin accounts: one family's members and invite links. */
 const auth = useAuthStore()
 const route = useRoute()
-const router = useRouter()
+const nav = useAppNavigation()
 const id = computed(() => Number(route.params.id))
 
 const family = ref<AdminFamily | null>(null)
@@ -63,7 +65,7 @@ const saveName = () =>
 const destroy = () =>
   run(async () => {
     await deleteFamily(id.value)
-    await router.replace({ name: 'admin-families' })
+    await nav.back({ name: 'admin-families' })
   })
 
 const remove = (member: AdminMember) =>
@@ -104,7 +106,8 @@ async function shareLink(): Promise<void> {
 }
 
 function describeInvite(invite: AdminInvite): string {
-  const uses = invite.max_uses === null ? `${invite.uses} joined` : `${invite.uses} of ${invite.max_uses} used`
+  const uses =
+    invite.max_uses === null ? `${invite.uses} joined` : `${invite.uses} of ${invite.max_uses} used`
   const expires = new Date(invite.expires_at).toLocaleDateString(undefined, { dateStyle: 'medium' })
   return `${uses} · expires ${expires}`
 }
@@ -118,7 +121,7 @@ onMounted(load)
 
 <template>
   <main class="narrow stack">
-    <RouterLink :to="{ name: 'admin-families' }" class="back-link">‹ Families</RouterLink>
+    <BackLink :to="{ name: 'admin-families' }">‹ Families</BackLink>
 
     <p v-if="!family && !error" class="muted">Loading…</p>
     <p v-if="error" class="error" role="alert">{{ error }}</p>
@@ -131,7 +134,7 @@ onMounted(load)
       </form>
       <div v-else class="title-row">
         <h1>{{ family.name }}</h1>
-        <button type="button" class="link" @click="(renaming = true), (newName = family.name)">
+        <button type="button" class="link" @click="((renaming = true), (newName = family.name))">
           Rename
         </button>
       </div>
@@ -163,12 +166,20 @@ onMounted(load)
 
         <div v-if="newLink" class="new-link stack">
           <label for="invite-link">Send this link. It’s only shown once.</label>
-          <input id="invite-link" :value="newLink" type="text" readonly @focus="($event.target as HTMLInputElement).select()" />
+          <input
+            id="invite-link"
+            :value="newLink"
+            type="text"
+            readonly
+            @focus="($event.target as HTMLInputElement).select()"
+          />
           <div class="row">
             <button type="button" class="secondary" @click="copyLink">
               {{ copied ? 'Copied' : 'Copy link' }}
             </button>
-            <button v-if="canShare" type="button" class="secondary" @click="shareLink">Share…</button>
+            <button v-if="canShare" type="button" class="secondary" @click="shareLink">
+              Share…
+            </button>
           </div>
         </div>
 
@@ -177,7 +188,12 @@ onMounted(load)
           <ul class="list">
             <li v-for="invite in family.invites" :key="invite.id" class="item">
               <span class="small">{{ describeInvite(invite) }}</span>
-              <button type="button" class="link danger-link" :disabled="busy" @click="cancelInvite(invite)">
+              <button
+                type="button"
+                class="link danger-link"
+                :disabled="busy"
+                @click="cancelInvite(invite)"
+              >
                 Cancel
               </button>
             </li>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { useAppNavigation } from '@/composables/useAppNavigation'
+import BackLink from '@/components/BackLink.vue'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
 import { errorMessage } from '@/api/http'
 import { useMyGiftsStore } from '../store'
 
 const props = defineProps<{ id: string }>()
-const router = useRouter()
+const nav = useAppNavigation()
 const gifts = useMyGiftsStore()
 
 const item = computed(() => gifts.items.find((i) => i.id === Number(props.id)))
@@ -41,7 +42,7 @@ async function run(action: () => Promise<void>): Promise<void> {
   error.value = ''
   try {
     await action()
-    await router.push({ name: 'gifts' })
+    await nav.back({ name: 'gifts' })
   } catch (e) {
     error.value = errorMessage(e)
   } finally {
@@ -68,7 +69,7 @@ onMounted(() => {
 
 <template>
   <main class="narrow stack">
-    <RouterLink :to="{ name: 'gifts' }" class="back-link">‹ My list</RouterLink>
+    <BackLink :to="{ name: 'gifts' }">‹ My list</BackLink>
 
     <p v-if="error" class="error" role="alert">{{ error }}</p>
     <p v-if="!gifts.loaded" class="muted">Loading…</p>
@@ -97,12 +98,7 @@ onMounted(() => {
           placeholder="Link"
           :aria-label="`Link ${index + 1}`"
         />
-        <button
-          v-if="links.length < 5"
-          type="button"
-          class="link add-link"
-          @click="links.push('')"
-        >
+        <button v-if="links.length < 5" type="button" class="link add-link" @click="links.push('')">
           + Link
         </button>
       </div>

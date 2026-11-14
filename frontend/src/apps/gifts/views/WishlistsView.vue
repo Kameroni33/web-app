@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import BackLink from '@/components/BackLink.vue'
 import { onMounted, ref } from 'vue'
 import { errorMessage } from '@/api/http'
 import { linkHost } from '../api'
@@ -40,7 +41,7 @@ onMounted(() => {
 
 <template>
   <main class="narrow stack">
-    <RouterLink :to="{ name: 'gifts' }" class="back-link">‹ My list</RouterLink>
+    <BackLink :to="{ name: 'gifts' }">‹ My list</BackLink>
     <h1>Other lists</h1>
 
     <p v-if="error" class="error" role="alert">{{ error }}</p>
