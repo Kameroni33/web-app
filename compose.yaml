@@ -81,8 +81,11 @@ services:
       timeout: 3s
       retries: 10
 
+  # Only on the production server (COMPOSE_PROFILES=tunnel in its .env). A second
+  # copy running anywhere else would get half of the live traffic.
   cloudflared:
     image: cloudflare/cloudflared:2026.10.7
+    profiles: [tunnel]
     command: ["tunnel", "--no-autoupdate", "run"]
     environment:
       TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
