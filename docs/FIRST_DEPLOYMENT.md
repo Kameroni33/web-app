@@ -170,14 +170,14 @@ scp .env kam-apps:~/web-app/.env
 
 Then on the server run `nano ~/web-app/.env` and make these changes:
 
-| Setting | Server value | Why |
-| --- | --- | --- |
-| `COMPOSE_FILE` | **delete the line** | Laptop-only dev overlay (live-mounts code) |
-| `COMPOSE_PROFILES` | `tunnel` | Starts `cloudflared` here |
-| `APP_ENV` / `APP_DEBUG` | `production` / `false` | |
-| `APP_URL` | `https://app.network-kam.com` | Used in emailed sign-in links |
-| `SESSION_SECURE_COOKIE` | `true` | HTTPS-only cookies |
-| `BACKUP_S3_BUCKET` | your bucket name | Turns on the S3 upload |
+| Setting                 | Server value                  | Why                                        |
+|-------------------------|-------------------------------|--------------------------------------------|
+| `COMPOSE_FILE`          | **delete the line**           | Laptop-only dev overlay (live-mounts code) |
+| `COMPOSE_PROFILES`      | `tunnel`                      | Starts `cloudflared` here                  |
+| `APP_ENV` / `APP_DEBUG` | `production` / `false`        |                                            |
+| `APP_URL`               | `https://app.network-kam.com` | Used in emailed sign-in links              |
+| `SESSION_SECURE_COOKIE` | `true`                        | HTTPS-only cookies                         |
+| `BACKUP_S3_BUCKET`      | your bucket name              | Turns on the S3 upload                     |
 
 **Keep these exactly as they are:**
 
@@ -225,12 +225,12 @@ The site is down from step 3 to step 5 of this list.
    docker compose exec -T app php artisan migrate --force
    ```
 
-5. **Server:** start everything, tunnel included (the profile comes from `.env`). **The site is back.**
+   5. **Server:** start everything, tunnel included (the profile comes from `.env`). **The site is back.**
 
-   ```bash
-   docker compose up -d
-   docker compose ps
-   ```
+      ```bash
+      docker compose up -d
+      docker compose ps
+      ```
 
 6. **Cloudflare dashboard → Zero Trust → Networks → Tunnels → `web-app`:** it should show **Healthy**, with one connector whose origin IP is the static IP.
 
@@ -238,10 +238,10 @@ You should still be signed in on your phone, because sessions live in the databa
 
 ## 10. Check everything
 
-- [ ] `https://app.network-kam.com` loads, and your gift list is there.
-- [ ] Sign out, then sign in. The code email arrives, which proves Horizon (the queue) and email both work.
-- [ ] Settings → About shows the same app and server version.
-- [ ] Run `~/web-app/scripts/backup.sh`. It says *Uploaded to s3://…*, and the file appears in the S3 console under `db/`.
+- [x] `https://app.network-kam.com` loads, and your gift list is there.
+- [x] Sign out, then sign in. The code email arrives, which proves Horizon (the queue) and email both work.
+- [x] Settings → About shows the same app and server version.
+- [x] Run `~/web-app/scripts/backup.sh`. It says *Uploaded to s3://…*, and the file appears in the S3 console under `db/`.
 - [ ] Tomorrow: `~/backup.log` shows last night's run, and Lightsail → Snapshots shows an automatic snapshot.
 
 ## 11. Turn the laptop back into a dev machine
