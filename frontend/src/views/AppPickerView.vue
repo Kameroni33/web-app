@@ -41,7 +41,6 @@ onMounted(load)
         <RouterLink :to="app.home" class="app-tile">
           <img :src="app.icon" alt="" width="64" height="64" />
           <span class="name">{{ app.name }}</span>
-          <span class="description muted">{{ app.description }}</span>
         </RouterLink>
       </li>
     </ul>
@@ -91,10 +90,5 @@ onMounted(load)
 
 .name {
   font-weight: 600;
-}
-
-.description {
-  font-size: 0.85rem;
-  line-height: 1.35;
 }
 </style>

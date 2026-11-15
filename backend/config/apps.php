@@ -21,7 +21,7 @@ return [
 
     'food' => [
         'name' => 'Food',
-        'description' => 'Recipes and the grocery list.',
+        'description' => 'Recipes and grocery lists',
     ],
 
     'money' => [
