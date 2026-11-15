@@ -19,21 +19,21 @@ The reference for the production server. If you're coming back after months away
 
 Fill this in during the first deployment and keep it current.
 
-| Thing | Value |
-| --- | --- |
-| AWS sign-in | IAM user `kameron` (AdministratorAccess, MFA) at `https://<account-id>.signin.aws.amazon.com/console`. Root has MFA and is only for account and billing jobs. |
-| Laptop CLI | Profile `kam-apps` (ca-central-1), signed in as `kameron` with `aws login --profile kam-apps` (12 h credentials, renewed automatically for 90 days) |
-| Agent tooling | AWS Agent Toolkit: `aws-mcp` MCP server + AWS skills for Claude Code, using profile `kam-apps` |
-| Region | `ca-central-1` (Canada, Montréal) |
-| Lightsail instance | `kam-apps` · Ubuntu LTS · 1 GB plan · created ____ |
-| Static IP | `kam-apps-ip` = ____ |
-| Firewall | IPv4 + IPv6: SSH 22 only (HTTP 80 removed) |
-| Automatic snapshots | Daily at 09:00 UTC, 7 kept |
-| S3 backup bucket | `kam-apps-backups-____` · versioned · lifecycle `expire-old-dumps` (90 days; old versions after 7) |
-| IAM user for backups | `kam-apps-backup` · policy `kam-apps-backup-upload` (list + upload to `db/` only) · key created ____ |
-| Budget | `monthly-cap` · $20 · emails you |
-| Server login | `ubuntu`, key-only SSH with your `~/.ssh/id_ed25519` |
-| App checkout on server | `/home/ubuntu/web-app` (public GitHub repo, `main`) |
+| Thing                  | Value                                                                                                                                                         |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AWS sign-in            | IAM user `kameron` (AdministratorAccess, MFA) at `https://<account-id>.signin.aws.amazon.com/console`. Root has MFA and is only for account and billing jobs. |
+| Laptop CLI             | Profile `kam-apps` (ca-central-1), signed in as `kameron` with `aws login --profile kam-apps` (12 h credentials, renewed automatically for 90 days)           |
+| Agent tooling          | AWS Agent Toolkit: `aws-mcp` MCP server + AWS skills for Claude Code, using profile `kam-apps`                                                                |
+| Region                 | `ca-central-1` (Canada, Montréal)                                                                                                                             |
+| Lightsail instance     | `kam-apps` · Ubuntu LTS · 1 GB plan · created ____                                                                                                            |
+| Static IP              | `kam-apps-ip` = 15.175.204.159                                                                                                                                |
+| Firewall               | IPv4 + IPv6: SSH 22 only (HTTP 80 removed)                                                                                                                    |
+| Automatic snapshots    | Daily at 09:00 UTC, 7 kept                                                                                                                                    |
+| S3 backup bucket       | `kam-apps-backups-____` · versioned · lifecycle `expire-old-dumps` (90 days; old versions after 7)                                                            |
+| IAM user for backups   | `kam-apps-backup` · policy `kam-apps-backup-upload` (list + upload to `db/` only) · key created ____                                                          |
+| Budget                 | `monthly-cap` · $20 · emails you                                                                                                                              |
+| Server login           | `ubuntu`, key-only SSH with your `~/.ssh/id_ed25519`                                                                                                          |
+| App checkout on server | `/home/ubuntu/web-app` (public GitHub repo, `main`)                                                                                                           |
 
 ## How it fits together
 

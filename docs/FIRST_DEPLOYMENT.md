@@ -27,10 +27,10 @@ Lightsail is AWS's flat-price VPS: one monthly price covers the CPU, disk, a sta
 
 ## Before you start
 
-- [ ] You have an AWS account (step 0 sets up a safe login for it).
-- [ ] Your laptop's stack is running and the site works.
-- [ ] You have your SSH public key (`cat ~/.ssh/id_ed25519.pub`). If you don't have one: `ssh-keygen -t ed25519`.
-- [ ] **Until the cutover, add `COMPOSE_PROFILES=tunnel` to the laptop's `.env`.** `compose.yaml` now starts `cloudflared` only when that profile is on. Without it, a rebuild on the laptop wouldn't start the tunnel and the live site would go down.
+- [x] You have an AWS account (step 0 sets up a safe login for it).
+- [x] Your laptop's stack is running and the site works.
+- [x] You have your SSH public key (`cat ~/.ssh/id_ed25519.pub`). If you don't have one: `ssh-keygen -t ed25519`.
+- [x] **Until the cutover, add `COMPOSE_PROFILES=tunnel` to the laptop's `.env`.** `compose.yaml` now starts `cloudflared` only when that profile is on. Without it, a rebuild on the laptop wouldn't start the tunnel and the live site would go down.
 
 > **Golden rule:** only one machine may run `cloudflared` with the production token. If two run at once, Cloudflare splits visitors between them, and each machine has its own database.
 
